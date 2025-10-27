@@ -23,6 +23,9 @@ public class User {
     
     @SerializedName("role")
     private String role;
+    
+    @SerializedName("isVerified")
+    private boolean isVerified;
 
     public String getId() {
         return id;
@@ -50,5 +53,9 @@ public class User {
 
     public String getRole() {
         return role;
+    }
+    
+    public boolean isVerified() {
+        return isVerified;
     }
 }
