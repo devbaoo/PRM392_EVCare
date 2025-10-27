@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -19,27 +17,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.prm392_evcare.api.ApiClient;
 import com.example.prm392_evcare.api.ApiService;
-import com.example.prm392_evcare.models.LoginRequest;
-import com.example.prm392_evcare.models.LoginResponse;
-import com.example.prm392_evcare.utils.SessionManager;
+import com.example.prm392_evcare.models.ForgotPasswordRequest;
+import com.example.prm392_evcare.models.ForgotPasswordResponse;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LoginActivity extends AppCompatActivity {
+public class ForgotPasswordActivity extends AppCompatActivity {
 
-    private TextInputLayout tilEmail, tilPassword;
-    private TextInputEditText etEmail, etPassword;
-    private MaterialButton btnLogin;
-    private TextView tvForgotPassword, tvRegister;
+    private TextInputLayout tilEmail;
+    private TextInputEditText etEmail;
+    private MaterialButton btnSubmit;
+    private TextView tvBackToLogin;
+    private ImageView ivBack;
     private ProgressBar progressBar;
     private LottieAnimationView animationView;
     private ApiService apiService;
-    private SessionManager sessionManager;
     
     private Dialog progressDialog;
     private Dialog statusDialog;
@@ -47,65 +46,44 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_forgot_password);
 
         // Initialize API service
         apiService = ApiClient.getClient().create(ApiService.class);
-        
-        // Initialize session manager
-        sessionManager = new SessionManager(this);
-        
-        // Check if user is already logged in
-        if (sessionManager.isLoggedIn()) {
-            navigateToMain();
-            return;
-        }
 
         // Initialize views
-        tilEmail = findViewById(R.id.tilEmail);
-        tilPassword = findViewById(R.id.tilPassword);
-        etEmail = findViewById(R.id.etEmail);
-        etPassword = findViewById(R.id.etPassword);
-        btnLogin = findViewById(R.id.btnLogin);
-        tvForgotPassword = findViewById(R.id.tvForgotPassword);
-        tvRegister = findViewById(R.id.tvRegister);
-        progressBar = findViewById(R.id.progressBar);
-        animationView = findViewById(R.id.animationView);
+        initViews();
         
         // Set animation
         animationView.setAnimation(R.raw.electric_car_animation);
         animationView.playAnimation();
 
         // Set click listeners
-        btnLogin.setOnClickListener(v -> attemptLogin());
-        tvForgotPassword.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
-            startActivity(intent);
-        });
-        tvRegister.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-            startActivity(intent);
-        });
+        btnSubmit.setOnClickListener(v -> attemptForgotPassword());
+        tvBackToLogin.setOnClickListener(v -> navigateToLogin());
+        ivBack.setOnClickListener(v -> finish());
+    }
+    
+    private void initViews() {
+        tilEmail = findViewById(R.id.tilEmail);
+        etEmail = findViewById(R.id.etEmail);
+        btnSubmit = findViewById(R.id.btnSubmit);
+        tvBackToLogin = findViewById(R.id.tvBackToLogin);
+        ivBack = findViewById(R.id.ivBack);
+        progressBar = findViewById(R.id.progressBar);
+        animationView = findViewById(R.id.animationView);
     }
 
-    private void attemptLogin() {
+    private void attemptForgotPassword() {
         // Reset errors
         tilEmail.setError(null);
-        tilPassword.setError(null);
 
         // Get values
         String email = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
 
         // Validate inputs
         boolean cancel = false;
         View focusView = null;
-
-        if (TextUtils.isEmpty(password)) {
-            tilPassword.setError("Password is required");
-            focusView = etPassword;
-            cancel = true;
-        }
 
         if (TextUtils.isEmpty(email)) {
             tilEmail.setError("Email is required");
@@ -121,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
             showProgress(true);
-            performLogin(email, password);
+            performForgotPassword(email);
         }
     }
 
@@ -129,46 +107,64 @@ public class LoginActivity extends AppCompatActivity {
         return email.contains("@") && email.contains(".");
     }
 
-    private void performLogin(String email, String password) {
-        LoginRequest loginRequest = new LoginRequest(email, password);
+    private void performForgotPassword(String email) {
+        ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest(email);
         
-        Call<LoginResponse> call = apiService.login(loginRequest);
-        call.enqueue(new Callback<LoginResponse>() {
+        Call<ForgotPasswordResponse> call = apiService.forgotPassword(forgotPasswordRequest);
+        call.enqueue(new Callback<ForgotPasswordResponse>() {
             @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+            public void onResponse(Call<ForgotPasswordResponse> call, Response<ForgotPasswordResponse> response) {
                 showProgress(false);
                 
                 if (response.isSuccessful() && response.body() != null) {
-                    LoginResponse loginResponse = response.body();
+                    ForgotPasswordResponse forgotPasswordResponse = response.body();
                     
-                    if (loginResponse.isSuccess()) {
-                        // Save session data
-                        sessionManager.saveAuthToken(loginResponse.getAccessToken());
-                        sessionManager.saveRefreshToken(loginResponse.getRefreshToken());
-                        sessionManager.saveUser(loginResponse.getUser());
-                        sessionManager.setLoggedIn(true);
-                        
+                    if (forgotPasswordResponse.isSuccess()) {
                         // Show success dialog
-                        showStatusDialog(true, "Đăng nhập thành công", 
-                                "Chào mừng " + loginResponse.getUser().getFullName() + " đã trở lại!");
+                        showStatusDialog(true, "Email sent", forgotPasswordResponse.getMessage());
                     } else {
                         // Show error dialog
-                        showStatusDialog(false, "Đăng nhập thất bại", 
-                                loginResponse.getMessage() != null ? loginResponse.getMessage() : "Sai email hoặc mật khẩu.");
+                        showStatusDialog(false, "Failed to send email", 
+                                forgotPasswordResponse.getMessage() != null 
+                                    ? forgotPasswordResponse.getMessage() 
+                                    : "Could not send reset email. Please try again.");
                     }
                 } else {
-                    // Show error dialog
-                    showStatusDialog(false, "Đăng nhập thất bại", 
-                            "Không thể kết nối đến máy chủ. Vui lòng thử lại sau.");
+                    // Parse error response
+                    try {
+                        if (response.errorBody() != null) {
+                            String errorBody = response.errorBody().string();
+                            // Try to parse JSON to extract message
+                            try {
+                                JsonObject jsonObject = new JsonParser().parse(errorBody).getAsJsonObject();
+                                if (jsonObject.has("message")) {
+                                    String errorMessage = jsonObject.get("message").getAsString();
+                                    showStatusDialog(false, "Failed to send email", errorMessage);
+                                } else {
+                                    showStatusDialog(false, "Failed to send email", 
+                                            "An error occurred. Please try again later.");
+                                }
+                            } catch (Exception e) {
+                                showStatusDialog(false, "Failed to send email", 
+                                        "An error occurred. Please try again later.");
+                            }
+                        } else {
+                            showStatusDialog(false, "Failed to send email", 
+                                    "Could not connect to server. Please try again later.");
+                        }
+                    } catch (Exception e) {
+                        showStatusDialog(false, "Failed to send email", 
+                                "Could not connect to server. Please try again later.");
+                    }
                 }
             }
 
             @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
+            public void onFailure(Call<ForgotPasswordResponse> call, Throwable t) {
                 showProgress(false);
                 // Show network error dialog
-                showStatusDialog(false, "Lỗi kết nối", 
-                        "Không thể kết nối đến máy chủ: " + t.getMessage());
+                showStatusDialog(false, "Connection error", 
+                        "Could not connect to server: " + t.getMessage());
             }
         });
     }
@@ -203,8 +199,8 @@ public class LoginActivity extends AppCompatActivity {
         btnOk.setOnClickListener(v -> {
             statusDialog.dismiss();
             if (isSuccess) {
-                // Navigate to main activity with delay for better UX
-                new Handler(Looper.getMainLooper()).postDelayed(this::navigateToMain, 500);
+                // Navigate back to login after successful email send
+                navigateToLogin();
             }
         });
         
@@ -217,7 +213,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             hideProgressDialog();
         }
-        btnLogin.setEnabled(!show);
+        btnSubmit.setEnabled(!show);
     }
     
     private void showProgressDialog() {
@@ -227,6 +223,12 @@ public class LoginActivity extends AppCompatActivity {
             progressDialog.setContentView(R.layout.dialog_login_progress);
             progressDialog.setCancelable(false);
             progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            
+            // Update progress dialog text
+            TextView tvLoading = progressDialog.findViewById(R.id.tvLoading);
+            if (tvLoading != null) {
+                tvLoading.setText("Đang gửi email...");
+            }
         }
         progressDialog.show();
     }
@@ -237,10 +239,11 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void navigateToMain() {
-        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    private void navigateToLogin() {
+        Intent intent = new Intent(ForgotPasswordActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }
 }
+
