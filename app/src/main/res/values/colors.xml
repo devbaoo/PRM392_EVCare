@@ -2,19 +2,41 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="primary">#1976D2</color>
-    <color name="primary_dark">#0D47A1</color>
-    <color name="primary_light">#42A5F5</color>
-    <color name="accent">#00BFA5</color>
-    <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
-    <color name="text_light">#FAFAFA</color>
-    <color name="divider">#BDBDBD</color>
-    <color name="error">#D32F2F</color>
-    <color name="success">#388E3C</color>
-    <color name="warning">#FFA000</color>
-    <color name="info">#1976D2</color>
-    <color name="background_light">#F5F5F5</color>
+    
+    <!-- Modern Primary Colors -->
+    <color name="primary">#6366F1</color>
+    <color name="primary_dark">#4F46E5</color>
+    <color name="primary_light">#818CF8</color>
+    <color name="accent">#10B981</color>
+    
+    <!-- Gradient Colors -->
+    <color name="gradient_start">#6366F1</color>
+    <color name="gradient_mid">#8B5CF6</color>
+    <color name="gradient_end">#EC4899</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#1F2937</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="text_light">#FFFFFF</color>
+    <color name="divider">#E5E7EB</color>
+    
+    <!-- Status Colors -->
+    <color name="error">#EF4444</color>
+    <color name="success">#10B981</color>
+    <color name="warning">#F59E0B</color>
+    <color name="info">#3B82F6</color>
+    
+    <!-- Background Colors -->
+    <color name="background_light">#F9FAFB</color>
     <color name="card_background">#FFFFFF</color>
-    <color name="link_color">#0288D1</color>
+    <color name="link_color">#6366F1</color>
+    <color name="rating_star">#FBBF24</color>
+    
+    <!-- Surface Colors -->
+    <color name="surface_primary">#FFFFFF</color>
+    <color name="surface_secondary">#F9FAFB</color>
+    
+    <!-- Shadow Overlay -->
+    <color name="shadow_dark">#1F2937</color>
+    <color name="overlay_light">#66000000</color>
 </resources>
