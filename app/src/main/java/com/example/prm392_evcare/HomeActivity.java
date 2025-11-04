@@ -162,7 +162,8 @@ public class HomeActivity extends AppCompatActivity {
                 Toast.makeText(this, "Tìm gần tôi (sắp ra mắt)", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (itemId == R.id.nav_bookings) {
-                Toast.makeText(this, "Lịch hẹn (sắp ra mắt)", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(HomeActivity.this, BookingHistoryActivity.class);
+                startActivity(intent);
                 return true;
             } else if (itemId == R.id.nav_profile) {
                 navigateToProfile();
@@ -195,8 +196,9 @@ public class HomeActivity extends AppCompatActivity {
     
     private void setupClickListeners() {
         btnBookService.setOnClickListener(v -> {
-            Toast.makeText(this, "Booking service...", Toast.LENGTH_SHORT).show();
-            // TODO: Implement booking flow
+            // Navigate to BookingActivity
+            Intent intent = new Intent(HomeActivity.this, BookingActivity.class);
+            startActivity(intent);
         });
         
         spinnerRadius.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
