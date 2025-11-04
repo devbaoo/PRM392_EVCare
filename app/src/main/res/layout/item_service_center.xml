@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="12dp"
-    app:cardBackgroundColor="@color/card_background"
-    app:cardCornerRadius="24dp"
-    app:cardElevation="8dp"
-    app:cardUseCompatPadding="false"
-    android:foreground="@drawable/ripple_effect">
+    android:layout_margin="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:strokeColor="#E0E0E0"
+    app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="0dp">
 
         <!-- Service Center Image with Overlay -->
         <FrameLayout
             android:id="@+id/frameImage"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
+            android:layout_height="180dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -26,37 +30,51 @@
             <ImageView
                 android:id="@+id/ivServiceCenterImage"
                 android:layout_width="match_parent"
-                android:layout_height="160dp"
+                android:layout_height="180dp"
                 android:scaleType="centerCrop"
-                android:src="@android:drawable/ic_menu_mapmode" />
+                android:src="@android:drawable/ic_menu_gallery"
+                tools:src="@android:drawable/ic_menu_gallery" />
 
             <!-- Gradient Overlay -->
             <View
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_height="100dp"
                 android:layout_gravity="bottom"
-                android:background="@drawable/gradient_background"
-                android:alpha="0.6" />
+                android:background="@drawable/gradient_overlay" />
 
-            <!-- Quick Info Badge -->
+            <!-- Status Badge -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_margin="12dp"
+                android:text="Open"
+                android:textColor="@android:color/white"
+                android:textSize="11sp"
+                app:chipBackgroundColor="#4CAF50"
+                app:chipCornerRadius="12dp"
+                app:chipMinHeight="24dp" />
+
+            <!-- Rating Badge -->
             <LinearLayout
                 android:id="@+id/badgeContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|end"
                 android:layout_margin="12dp"
-                android:background="@drawable/card_modern_background"
-                android:elevation="4dp"
+                android:background="@drawable/badge_background"
+                android:gravity="center"
                 android:orientation="horizontal"
-                android:paddingHorizontal="12dp"
+                android:paddingHorizontal="10dp"
                 android:paddingVertical="6dp">
 
                 <ImageView
                     android:id="@+id/ivRating"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
                     android:src="@android:drawable/star_big_on"
-                    app:tint="@color/rating_star" />
+                    app:tint="#FFC107" />
 
                 <TextView
                     android:id="@+id/tvRating"
@@ -64,119 +82,199 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="4.5"
-                    android:textColor="@color/text_primary"
+                    android:textColor="@android:color/white"
                     android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </FrameLayout>
 
-        <!-- Content Card -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/contentCard"
-            android:layout_width="0dp"
+        <!-- Content Section -->
+        <LinearLayout
+            android:id="@+id/contentSection"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardBackgroundColor="@color/card_background"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
+            android:orientation="vertical"
+            android:padding="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/frameImage">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- Service Center Name -->
+            <TextView
+                android:id="@+id/tvServiceCenterName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp">
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="EVCare HCM Center"
+                android:textColor="#212121"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="EVCare HCM Center" />
 
-                <!-- Service Center Name -->
-                <TextView
-                    android:id="@+id/tvServiceCenterName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:maxLines="2"
-                    android:text="Service Center Name"
-                    android:textColor="@color/text_primary"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <!-- Description -->
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="Trung tâm bảo dưỡng EV"
+                android:textColor="#757575"
+                android:textSize="13sp"
+                tools:text="Trung tâm bảo dưỡng EV tại Quận 1, TP.HCM" />
 
-                <!-- Address -->
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="12dp"
+                android:background="#E0E0E0" />
+
+            <!-- Address Info -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="start"
+                    android:src="@android:drawable/ic_menu_mylocation"
+                    app:tint="#2196F3" />
+
                 <TextView
                     android:id="@+id/tvServiceCenterAddress"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
                     android:ellipsize="end"
                     android:maxLines="2"
-                    android:text="123 Main Street"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvServiceCenterName" />
+                    android:text="123 Lê Lợi, Bến Thành, Quận 1"
+                    android:textColor="#424242"
+                    android:textSize="13sp"
+                    tools:text="123 Lê Lợi, Bến Thành, Quận 1" />
+            </LinearLayout>
 
-                <!-- Distance and Open Status -->
-                <LinearLayout
-                    android:id="@+id/layoutRatingDistance"
-                    android:layout_width="match_parent"
+            <!-- Distance Info -->
+            <LinearLayout
+                android:id="@+id/layoutDistance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="start"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="start"
+                    android:src="@android:drawable/ic_menu_directions"
+                    app:tint="#FF9800" />
+
+                <TextView
+                    android:id="@+id/tvDistance"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvServiceCenterAddress">
+                    android:layout_marginStart="8dp"
+                    android:text="2.5 km away"
+                    android:textColor="#424242"
+                    android:textSize="13sp"
+                    tools:text="2.5 km away" />
+            </LinearLayout>
 
-                    <!-- Distance Badge -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="?attr/selectableItemBackground"
-                        android:orientation="horizontal"
-                        android:padding="6dp"
-                        android:paddingHorizontal="12dp">
+            <!-- Operating Hours -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="start"
+                android:orientation="horizontal">
 
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@android:drawable/ic_menu_mylocation"
-                            app:tint="@color/primary" />
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="start"
+                    android:src="@android:drawable/ic_menu_recent_history"
+                    app:tint="#4CAF50" />
 
-                        <TextView
-                            android:id="@+id/tvDistance"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="6dp"
-                            android:text="2.5 km"
-                            android:textColor="@color/primary"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
+                <TextView
+                    android:id="@+id/tvOperatingHours"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="07:00 - 23:00"
+                    android:textColor="#424242"
+                    android:textSize="13sp"
+                    tools:text="07:00 - 23:00 (Open)" />
+            </LinearLayout>
 
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1" />
+            <!-- Info Row: Phone & Staff Count -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                    <!-- Open Status -->
+                <!-- Phone -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@android:drawable/ic_menu_call"
+                        app:tint="#009688" />
+
                     <TextView
-                        android:id="@+id/tvStatus"
+                        android:id="@+id/tvPhone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/card_modern_background"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="6dp"
-                        android:text="Open"
-                        android:textColor="@color/success"
+                        android:layout_marginStart="6dp"
+                        android:text="028-3765-1234"
+                        android:textColor="#424242"
                         android:textSize="12sp"
-                        android:textStyle="bold" />
+                        tools:text="028-3765-1234" />
                 </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+
+                <!-- Staff Count -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@android:drawable/ic_menu_myplaces"
+                        app:tint="#9C27B0" />
+
+                    <TextView
+                        android:id="@+id/tvStaffCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="3 Staff"
+                        android:textColor="#424242"
+                        android:textSize="12sp"
+                        tools:text="3 Staff" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
 

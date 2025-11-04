@@ -64,16 +64,8 @@ public class MainActivity extends AppCompatActivity {
     
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_logout) {
-            logout();
-            return true;
-        }
+        // Logout moved to Profile screen
         return super.onOptionsItemSelected(item);
-    }
-    
-    private void logout() {
-        sessionManager.clearSession();
-        navigateToLogin();
     }
     
     private void navigateToLogin() {

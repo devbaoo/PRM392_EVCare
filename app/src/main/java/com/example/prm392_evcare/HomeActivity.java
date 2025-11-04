@@ -40,6 +40,7 @@ import com.example.prm392_evcare.models.NearbyServiceCentersResponse;
 import com.example.prm392_evcare.models.User;
 import com.example.prm392_evcare.utils.SessionManager;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -96,7 +97,12 @@ public class HomeActivity extends AppCompatActivity {
         // Set up toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+        toolbar.setTitle("");
+        toolbar.setSubtitle(null);
         
         // Initialize views
         initializeViews();
@@ -116,6 +122,9 @@ public class HomeActivity extends AppCompatActivity {
         
         // Load features
         loadFeatures();
+
+        // Setup bottom navigation
+        setupBottomNavigation();
     }
     
     private void initializeViews() {
@@ -135,7 +144,33 @@ public class HomeActivity extends AppCompatActivity {
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerRadius.setAdapter(adapter);
-        spinnerRadius.setSelection(1); // Default to 10km
+        // Default to 50km to surface more nearby results from API
+        int defaultIndex = adapter.getCount() - 1; // assumes last item is largest radius
+        spinnerRadius.setSelection(defaultIndex);
+    }
+
+    private void setupBottomNavigation() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
+        if (bottomNavigationView == null) {
+            return;
+        }
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_home) {
+                return true; // already here
+            } else if (itemId == R.id.nav_nearby) {
+                Toast.makeText(this, "Tìm gần tôi (sắp ra mắt)", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.nav_bookings) {
+                Toast.makeText(this, "Lịch hẹn (sắp ra mắt)", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.nav_profile) {
+                navigateToProfile();
+                return true;
+            }
+            return false;
+        });
+        bottomNavigationView.setSelectedItemId(R.id.nav_home);
     }
     
     private void setupAdapters() {
@@ -149,7 +184,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         );
         
-        recyclerViewServiceCenters.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerViewServiceCenters.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewServiceCenters.setAdapter(serviceCenterAdapter);
         
         // Features Adapter
@@ -179,8 +214,8 @@ public class HomeActivity extends AppCompatActivity {
         });
         
         findViewById(R.id.tvViewAll).setOnClickListener(v -> {
-            Toast.makeText(this, "Viewing all service centers...", Toast.LENGTH_SHORT).show();
-            // TODO: Navigate to all service centers screen
+            Intent intent = new Intent(HomeActivity.this, ServiceCentersActivity.class);
+            startActivity(intent);
         });
     }
     
@@ -266,7 +301,12 @@ public class HomeActivity extends AppCompatActivity {
     private void fetchNearbyServiceCenters() {
         showLoading(true);
         tvServiceCenterMessage.setVisibility(View.GONE);
+        // Clear current items to avoid showing stale placeholders
+        if (serviceCenterAdapter != null) {
+            serviceCenterAdapter.updateServiceCenters(new ArrayList<>());
+        }
         
+        Log.d(TAG, "Fetching centers lat=" + currentLatitude + ", lng=" + currentLongitude + ", radius=" + searchRadius);
         apiService.getNearbyServiceCenters(currentLatitude, currentLongitude, searchRadius)
                 .enqueue(new Callback<NearbyServiceCentersResponse>() {
                     @Override
@@ -275,9 +315,10 @@ public class HomeActivity extends AppCompatActivity {
                         
                         if (response.isSuccessful() && response.body() != null) {
                             NearbyServiceCentersResponse apiResponse = response.body();
-                            
+                            Log.d(TAG, "API success=" + apiResponse.isSuccess());
                             if (apiResponse.isSuccess() && apiResponse.getData() != null) {
                                 List<ServiceCenter> centers = apiResponse.getData().getServiceCenters();
+                                Log.d(TAG, "Received centers count=" + (centers == null ? 0 : centers.size()));
                                 
                                 if (centers != null && !centers.isEmpty()) {
                                     // Calculate distances
@@ -353,6 +394,9 @@ public class HomeActivity extends AppCompatActivity {
         tvServiceCenterMessage.setText(message);
         tvServiceCenterMessage.setVisibility(View.VISIBLE);
         recyclerViewServiceCenters.setVisibility(View.GONE);
+        if (serviceCenterAdapter != null) {
+            serviceCenterAdapter.updateServiceCenters(new ArrayList<>());
+        }
     }
     
     private void showErrorDialog(String title, String message) {
@@ -385,10 +429,13 @@ public class HomeActivity extends AppCompatActivity {
     }
     
     private void showEmptyState() {
-        String message = String.format("Không tìm thấy trung tâm dịch vụ nào trong bán kính %d km", searchRadius);
+        String message = String.format("Không có trung tâm nào gần bạn trong bán kính %d km. Hãy thử tăng bán kính hoặc chọn vị trí khác.", searchRadius);
         tvServiceCenterMessage.setText(message);
         tvServiceCenterMessage.setVisibility(View.VISIBLE);
         recyclerViewServiceCenters.setVisibility(View.GONE);
+        if (serviceCenterAdapter != null) {
+            serviceCenterAdapter.updateServiceCenters(new ArrayList<>());
+        }
     }
     
     private void loadFeatures() {
@@ -404,25 +451,24 @@ public class HomeActivity extends AppCompatActivity {
     
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_logout) {
-            logout();
-            return true;
-        } else if (item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
     
-    private void logout() {
-        sessionManager.clearSession();
-        navigateToLogin();
-    }
+    // Logout method removed - use Profile screen for logout
     
     private void navigateToLogin() {
         Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+    }
+    
+    private void navigateToProfile() {
+        Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
+        startActivity(intent);
     }
 }

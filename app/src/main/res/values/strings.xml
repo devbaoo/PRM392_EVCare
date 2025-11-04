@@ -1,3 +1,35 @@
 <resources>
-    <string name="app_name">PRM392_EVCare</string>
+    <string name="app_name">EVCare</string>
+    
+    <!-- Home Screen -->
+    <string name="home_title">EV Service Centers</string>
+    <string name="home_subtitle">Find the best service centers near you</string>
+    <string name="book_service">Book Service</string>
+    <string name="view_all">View All</string>
+    <string name="loading">Loading…</string>
+    <string name="no_service_centers">No service centers found</string>
+    <string name="search_radius">Search Radius:</string>
+    
+    <!-- Service Center Details -->
+    <string name="open">Open</string>
+    <string name="closed">Closed</string>
+    <string name="rating">Rating</string>
+    <string name="distance">Distance</string>
+    <string name="staff">Staff</string>
+    <string name="operating_hours">Operating Hours</string>
+    <string name="phone">Phone</string>
+    <string name="address">Address</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_nearby">Nearby</string>
+    <string name="nav_bookings">Bookings</string>
+    <string name="nav_profile">Profile</string>
+    
+    <!-- Common -->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="retry">Retry</string>
+    <string name="km_away">%s km away</string>
+    <string name="staff_count">%d Staff</string>
 </resources>
