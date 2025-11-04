@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_color">
+
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@drawable/gradient_background"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:titleTextColor="@android:color/white" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Header -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đặt lịch bảo dưỡng"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chọn xe và trung tâm để bắt đầu đặt lịch"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginBottom="32dp" />
+
+            <!-- Booking Flow Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/card_background">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quy trình đặt lịch"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Step 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:text="1"
+                            android:gravity="center"
+                            android:background="@drawable/badge_background"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:backgroundTint="@color/primary_color" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chọn xe cần bảo dưỡng"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginStart="12dp" />
+                    </LinearLayout>
+
+                    <!-- Step 2 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:text="2"
+                            android:gravity="center"
+                            android:background="@drawable/badge_background"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:backgroundTint="@color/primary_color" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chọn trung tâm bảo dưỡng"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginStart="12dp" />
+                    </LinearLayout>
+
+                    <!-- Step 3 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:text="3"
+                            android:gravity="center"
+                            android:background="@drawable/badge_background"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:backgroundTint="@color/primary_color" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chọn dịch vụ cần thực hiện"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginStart="12dp" />
+                    </LinearLayout>
+
+                    <!-- Step 4 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:text="4"
+                            android:gravity="center"
+                            android:background="@drawable/badge_background"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:backgroundTint="@color/primary_color" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Chọn ngày giờ và xác nhận"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_primary"
+                            android:layout_marginStart="12dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Action Buttons -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bắt đầu"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Select Vehicle Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSelectVehicle"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="Chọn xe của tôi"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="@drawable/button_primary"
+                app:icon="@drawable/ic_image_placeholder"
+                app:iconTint="@android:color/white"
+                app:iconGravity="start"
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="4dp" />
+
+            <!-- Select Service Center Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSelectServiceCenter"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="Chọn trung tâm bảo dưỡng"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="@drawable/button_primary"
+                app:icon="@drawable/ic_location"
+                app:iconTint="@android:color/white"
+                app:iconGravity="start"
+                app:cornerRadius="12dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="4dp"
+                app:backgroundTint="@color/accent" />
+
+            <!-- View Booking History Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnViewBookingHistory"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="Xem lịch sử đặt lịch"
+                android:textSize="16sp"
+                android:textColor="@color/primary_color"
+                app:icon="@drawable/ic_check_circle"
+                app:iconTint="@color/primary_color"
+                app:iconGravity="start"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/primary_color"
+                app:strokeWidth="2dp"
+                android:backgroundTint="@android:color/transparent"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Info Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="#E3F2FD">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_error"
+                        app:tint="@color/info" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Lưu ý: Vui lòng đảm bảo xe của bạn đã được thêm vào hệ thống trước khi đặt lịch."
+                        android:textSize="13sp"
+                        android:textColor="@color/text_primary"
+                        android:layout_marginStart="12dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

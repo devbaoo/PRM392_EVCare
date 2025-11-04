@@ -58,6 +58,7 @@ public class ProfileActivity extends AppCompatActivity {
     private FloatingActionButton fabEditAvatar;
     private MaterialButton btnEditProfile;
     private MaterialButton btnChangePassword;
+    private MaterialButton btnManageVehicles;
     private MaterialButton btnLogout;
     
     private UserProfile currentUser;
@@ -113,6 +114,7 @@ public class ProfileActivity extends AppCompatActivity {
         fabEditAvatar = findViewById(R.id.fabEditAvatar);
         btnEditProfile = findViewById(R.id.btnEditProfile);
         btnChangePassword = findViewById(R.id.btnChangePassword);
+        btnManageVehicles = findViewById(R.id.btnManageVehicles);
         btnLogout = findViewById(R.id.btnLogout);
     }
     
@@ -138,7 +140,13 @@ public class ProfileActivity extends AppCompatActivity {
         });
         
         btnChangePassword.setOnClickListener(v -> {
-            Toast.makeText(this, "Change password feature coming soon", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(ProfileActivity.this, ChangePasswordActivity.class);
+            startActivity(intent);
+        });
+        
+        btnManageVehicles.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, ManageVehiclesActivity.class);
+            startActivity(intent);
         });
         
         btnLogout.setOnClickListener(v -> showLogoutDialog());
@@ -158,7 +166,8 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(this, "Tìm gần tôi (sắp ra mắt)", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (itemId == R.id.nav_bookings) {
-                Toast.makeText(this, "Lịch hẹn (sắp ra mắt)", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ProfileActivity.this, BookingHistoryActivity.class);
+                startActivity(intent);
                 return true;
             } else if (itemId == R.id.nav_profile) {
                 return true; // already here

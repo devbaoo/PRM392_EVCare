@@ -1,5 +1,6 @@
 package com.example.prm392_evcare;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -16,6 +17,7 @@ import com.example.prm392_evcare.api.ApiClient;
 import com.example.prm392_evcare.api.ApiService;
 import com.example.prm392_evcare.models.NearbyServiceCentersResponse;
 import com.example.prm392_evcare.models.ServiceCenter;
+import com.example.prm392_evcare.models.Vehicle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +33,15 @@ public class ServiceCentersActivity extends AppCompatActivity {
     private TextView tvMessage;
     private ServiceCenterAdapter adapter;
     private ApiService apiService;
+    private Vehicle vehicle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_service_centers);
+
+        // Get vehicle from intent
+        vehicle = (Vehicle) getIntent().getSerializableExtra("vehicle");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -49,7 +55,16 @@ public class ServiceCentersActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBarAllCenters);
         tvMessage = findViewById(R.id.tvAllCentersMessage);
 
-        adapter = new ServiceCenterAdapter(new ArrayList<>(), this, serviceCenter -> {});
+        adapter = new ServiceCenterAdapter(new ArrayList<>(), this, serviceCenter -> {
+            // Navigate to SelectServiceActivity
+            Intent intent = new Intent(ServiceCentersActivity.this, SelectServiceActivity.class);
+            if (vehicle != null) {
+                intent.putExtra("vehicle", vehicle);
+            }
+            intent.putExtra("service_center_id", serviceCenter.getId());
+            intent.putExtra("service_center_name", serviceCenter.getName());
+            startActivity(intent);
+        });
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         recyclerView.setAdapter(adapter);
 
