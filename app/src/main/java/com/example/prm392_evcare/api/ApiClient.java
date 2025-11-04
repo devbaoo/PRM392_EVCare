@@ -6,7 +6,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    private static final String BASE_URL = "https://dolphin-app-pwai8.ondigitalocean.app"; // Replace with your actual API base URL
+    private static final String BASE_URL = "https://dolphin-app-pwai8.ondigitalocean.app/"; // Must end with '/'
     private static Retrofit retrofit = null;
 
     public static Retrofit getClient() {

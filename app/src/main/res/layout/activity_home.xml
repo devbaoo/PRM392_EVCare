@@ -23,6 +23,7 @@
             app:contentScrim="@color/primary"
             app:expandedTitleTextAppearance="@style/ExpandedTitleStyle"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:titleEnabled="false"
             app:scrimAnimationDuration="300">
 
             <!-- Modern Gradient Background -->
@@ -117,9 +118,12 @@
 
     <!-- ScrollView Content with Modern Cards -->
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="80dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -344,5 +348,19 @@
                 app:layout_constraintTop_toBottomOf="@+id/featuresSection" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- Fixed Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/surface_primary"
+        android:elevation="8dp"
+        app:elevation="8dp"
+        app:itemIconTint="@color/primary"
+        app:itemTextColor="@color/primary"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
