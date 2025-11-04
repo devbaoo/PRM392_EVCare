@@ -412,6 +412,28 @@ public class ServiceCenter {
             this.sunday = sunday;
         }
 
+        // Helper method to get schedule for a specific day
+        public DaySchedule getScheduleForDay(String day) {
+            switch (day.toLowerCase()) {
+                case "monday":
+                    return monday;
+                case "tuesday":
+                    return tuesday;
+                case "wednesday":
+                    return wednesday;
+                case "thursday":
+                    return thursday;
+                case "friday":
+                    return friday;
+                case "saturday":
+                    return saturday;
+                case "sunday":
+                    return sunday;
+                default:
+                    return null;
+            }
+        }
+
         public static class DaySchedule {
             @SerializedName("open")
             private String open;

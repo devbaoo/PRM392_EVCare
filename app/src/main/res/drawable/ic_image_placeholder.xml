@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp"/>
+            <solid android:color="#ECEFF3"/>
+        </shape>
+    </item>
+    <item android:gravity="center">
+        <bitmap android:src="@android:drawable/ic_menu_gallery"
+            android:tint="#9AA4B2"/>
+    </item>
+ </layer-list>
+
+
