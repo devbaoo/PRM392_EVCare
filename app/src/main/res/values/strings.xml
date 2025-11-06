@@ -32,4 +32,8 @@
     <string name="retry">Retry</string>
     <string name="km_away">%s km away</string>
     <string name="staff_count">%d Staff</string>
+    
+    <!-- Navigation Drawer -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>
