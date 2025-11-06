@@ -2,6 +2,7 @@ package com.example.prm392_evcare;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ public class ConfirmBookingActivity extends AppCompatActivity {
 
     private TextInputEditText etSelectDate;
     private TextInputEditText etServiceDescription;
+    private TextInputEditText etSelectTime;
     private RadioGroup rgPaymentMethod;
     private RadioButton rbAtCenter;
     private RadioButton rbOnline;
@@ -59,6 +61,8 @@ public class ConfirmBookingActivity extends AppCompatActivity {
     private ServiceType serviceType;
     private Calendar selectedDate;
     private boolean isInspectionOnly;
+    private Integer selectedHour = null;
+    private Integer selectedMinute = null;
     
     private ApiService apiService;
     private SessionManager sessionManager;
@@ -99,6 +103,7 @@ public class ConfirmBookingActivity extends AppCompatActivity {
 
     private void initViews() {
         etSelectDate = findViewById(R.id.etSelectDate);
+        etSelectTime = findViewById(R.id.etSelectTime);
         etServiceDescription = findViewById(R.id.etServiceDescription);
         rgPaymentMethod = findViewById(R.id.rgPaymentMethod);
         rbAtCenter = findViewById(R.id.rbAtCenter);
@@ -149,6 +154,7 @@ public class ConfirmBookingActivity extends AppCompatActivity {
 
     private void setupListeners() {
         etSelectDate.setOnClickListener(v -> showDatePicker());
+        etSelectTime.setOnClickListener(v -> showTimePicker());
 
         rgPaymentMethod.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rbAtCenter) {
@@ -177,7 +183,12 @@ public class ConfirmBookingActivity extends AppCompatActivity {
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("vi", "VN"));
                     String formattedDate = sdf.format(selectedDate.getTime());
                     etSelectDate.setText(formattedDate);
-                    tvSelectedDate.setText(formattedDate);
+                    // Update summary with time if selected
+                    if (selectedHour != null) {
+                        tvSelectedDate.setText(formattedDate + " • " + formatTime(selectedHour, selectedMinute != null ? selectedMinute : 0));
+                    } else {
+                        tvSelectedDate.setText(formattedDate);
+                    }
                 },
                 selectedDate.get(Calendar.YEAR),
                 selectedDate.get(Calendar.MONTH),
@@ -186,6 +197,39 @@ public class ConfirmBookingActivity extends AppCompatActivity {
         
         datePickerDialog.getDatePicker().setMinDate(minDate.getTimeInMillis());
         datePickerDialog.show();
+    }
+
+    private void showTimePicker() {
+        int hour = selectedHour != null ? selectedHour : 9;
+        int minute = selectedMinute != null ? selectedMinute : 0;
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                this,
+                (view, hourOfDay, minuteOfHour) -> {
+                    selectedHour = hourOfDay;
+                    selectedMinute = minuteOfHour;
+
+                    String timeTxt = formatTime(hourOfDay, minuteOfHour);
+                    etSelectTime.setText(timeTxt);
+
+                    // Update summary label combining date and time
+                    CharSequence dateText = etSelectDate.getText();
+                    if (dateText != null && dateText.length() > 0) {
+                        tvSelectedDate.setText(dateText + " • " + timeTxt);
+                    } else {
+                        tvSelectedDate.setText(timeTxt);
+                    }
+                },
+                hour,
+                minute,
+                true
+        );
+
+        timePickerDialog.show();
+    }
+
+    private String formatTime(int hour, int minute) {
+        return String.format(Locale.getDefault(), "%02d:%02d", hour, minute);
     }
 
     private void confirmBooking() {
@@ -206,14 +250,29 @@ public class ConfirmBookingActivity extends AppCompatActivity {
         SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         String scheduledDate = isoFormat.format(selectedDate.getTime());
         
+        // Validate time selection
+        if (selectedHour == null) {
+            hideProgressDialog();
+            Toast.makeText(this, "Vui lòng chọn giờ hẹn", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Create service type IDs list
         List<String> serviceTypeIds = new ArrayList<>();
         if (!isInspectionOnly && serviceType != null) {
             serviceTypeIds.add(serviceType.getId());
         }
         
-        // Default time slot (can be enhanced later to let user choose)
-        String timeSlot = "09:00-10:00";
+        // Build time slot as 1-hour window based on selected time, e.g., 09:30-10:30
+        Calendar start = (Calendar) selectedDate.clone();
+        start.set(Calendar.HOUR_OF_DAY, selectedHour);
+        start.set(Calendar.MINUTE, selectedMinute != null ? selectedMinute : 0);
+        Calendar end = (Calendar) start.clone();
+        end.add(Calendar.HOUR_OF_DAY, 1);
+
+        String startStr = formatTime(start.get(Calendar.HOUR_OF_DAY), start.get(Calendar.MINUTE));
+        String endStr = formatTime(end.get(Calendar.HOUR_OF_DAY), end.get(Calendar.MINUTE));
+        String timeSlot = startStr + "-" + endStr;
         
         CreateBookingRequest request = new CreateBookingRequest(
             vehicle.getId(),

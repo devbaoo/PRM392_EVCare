@@ -67,28 +67,58 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="📅 Chọn ngày"
+                        android:text="📅 Chọn ngày giờ"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary" />
 
-                    <com.google.android.material.textfield.TextInputLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp">
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etSelectDate"
-                            android:layout_width="match_parent"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:hint="Chọn ngày hẹn"
-                            android:focusable="false"
-                            android:clickable="true"
-                            android:drawableEnd="@drawable/ic_arrow_right"
-                            android:inputType="none" />
+                            android:layout_weight="1"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                    </com.google.android.material.textfield.TextInputLayout>
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etSelectDate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Chọn ngày hẹn"
+                                android:focusable="false"
+                                android:clickable="true"
+                                android:drawableEnd="@drawable/ic_arrow_right"
+                                android:inputType="none" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <Space
+                            android:layout_width="12dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etSelectTime"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Chọn giờ hẹn"
+                                android:focusable="false"
+                                android:clickable="true"
+                                android:drawableEnd="@drawable/ic_arrow_right"
+                                android:inputType="none" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
