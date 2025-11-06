@@ -57,6 +57,23 @@
                 android:textColor="@color/text_primary"
                 android:layout_marginBottom="24dp" />
 
+            <!-- Brand Spinner -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hãng xe *"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="8dp" />
+
+            <Spinner
+                android:id="@+id/spinnerBrand"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/button_primary"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp" />
+
             <!-- Vehicle Model Spinner -->
             <TextView
                 android:layout_width="wrap_content"
@@ -131,42 +148,23 @@
                     android:textSize="16sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- VIN Number -->
+            <!-- Battery Capacity -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilVinNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:boxStrokeColor="@color/primary_color"
-                app:hintTextColor="@color/primary_color"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etVinNumber"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Số VIN *"
-                    android:inputType="textCapCharacters"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Mileage -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilMileage"
+                android:id="@+id/tilBatteryCapacity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 app:boxStrokeColor="@color/primary_color"
                 app:hintTextColor="@color/primary_color"
-                app:suffixText=" km"
+                app:suffixText=" kWh"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etMileage"
+                    android:id="@+id/etBatteryCapacity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Số km đã đi *"
-                    android:inputType="number"
+                    android:hint="Dung lượng pin *"
+                    android:inputType="numberDecimal"
                     android:textSize="16sp" />
             </com.google.android.material.textfield.TextInputLayout>
 

@@ -81,33 +81,45 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
     private void setupStatusChip(Chip chip, String status) {
         chip.setText(getStatusText(status));
         
-        switch (status.toLowerCase()) {
-            case "pending":
-                chip.setChipBackgroundColorResource(android.R.color.holo_orange_light);
-                break;
-            case "confirmed":
-                chip.setChipBackgroundColorResource(android.R.color.holo_blue_light);
-                break;
-            case "completed":
-                chip.setChipBackgroundColorResource(android.R.color.holo_green_light);
-                break;
-            case "cancelled":
-                chip.setChipBackgroundColorResource(android.R.color.holo_red_light);
-                break;
-            default:
-                chip.setChipBackgroundColorResource(android.R.color.darker_gray);
-                break;
+        String statusLower = status != null ? status.toLowerCase() : "";
+        
+        if (statusLower.contains("pending") || statusLower.equals("pending_confirmation")) {
+            chip.setChipBackgroundColorResource(android.R.color.holo_orange_light);
+        } else if (statusLower.contains("confirmed")) {
+            chip.setChipBackgroundColorResource(android.R.color.holo_blue_light);
+        } else if (statusLower.contains("completed")) {
+            chip.setChipBackgroundColorResource(android.R.color.holo_green_light);
+        } else if (statusLower.contains("cancelled")) {
+            chip.setChipBackgroundColorResource(android.R.color.holo_red_light);
+        } else if (statusLower.contains("quote")) {
+            chip.setChipBackgroundColorResource(android.R.color.holo_purple);
+        } else {
+            chip.setChipBackgroundColorResource(android.R.color.darker_gray);
         }
     }
 
     private String getStatusText(String status) {
-        switch (status.toLowerCase()) {
-            case "pending": return "Chờ xác nhận";
-            case "confirmed": return "Đã xác nhận";
-            case "completed": return "Hoàn thành";
-            case "cancelled": return "Đã hủy";
-            default: return status;
-        }
+        if (status == null) return "Unknown";
+        
+        String statusLower = status.toLowerCase();
+        
+        // Handle all possible statuses from API
+        if (statusLower.equals("pending_confirmation")) return "Chờ xác nhận";
+        if (statusLower.equals("confirmed")) return "Đã xác nhận";
+        if (statusLower.equals("in_progress")) return "Đang thực hiện";
+        if (statusLower.equals("completed")) return "Hoàn thành";
+        if (statusLower.equals("cancelled")) return "Đã hủy";
+        if (statusLower.equals("quote_provided")) return "Đã báo giá";
+        if (statusLower.equals("quote_approved")) return "Đã duyệt báo giá";
+        if (statusLower.equals("quote_rejected")) return "Từ chối báo giá";
+        
+        // Fallback
+        if (statusLower.contains("pending")) return "Chờ xác nhận";
+        if (statusLower.contains("confirmed")) return "Đã xác nhận";
+        if (statusLower.contains("completed")) return "Hoàn thành";
+        if (statusLower.contains("cancelled")) return "Đã hủy";
+        
+        return status;
     }
 
     private String formatDate(String dateString) {
