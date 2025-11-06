@@ -7,9 +7,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
-    
+
     <!-- Camera feature - not required for all devices -->
     <uses-feature
         android:name="android.hardware.camera"
@@ -26,70 +27,48 @@
         android:theme="@style/Theme.PRM392_EVCare"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".RegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ForgotPasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HomeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ServiceCentersActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SelectServiceActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ConfirmBookingActivity"
+
+        <activity android:name=".RegisterActivity" android:exported="false" />
+        <activity android:name=".ForgotPasswordActivity" android:exported="false" />
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity android:name=".HomeActivity" android:exported="false" />
+        <activity android:name=".ServiceCentersActivity" android:exported="false" />
+        <activity android:name=".SelectServiceActivity" android:exported="false" />
+        <activity android:name=".ConfirmBookingActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".ProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EditProfileActivity"
+        <activity android:name=".ProfileActivity" android:exported="false" />
+        <activity android:name=".EditProfileActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".UploadAvatarActivity"
+        <activity android:name=".UploadAvatarActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".ChangePasswordActivity"
+        <activity android:name=".ChangePasswordActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".ManageVehiclesActivity"
-            android:exported="false" />
-        <activity
-            android:name=".AddVehicleActivity"
+        <activity android:name=".ManageVehiclesActivity" android:exported="false" />
+        <activity android:name=".AddVehicleActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".EditVehicleActivity"
+        <activity android:name=".EditVehicleActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".BookingActivity"
+        <activity android:name=".BookingActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".BookingHistoryActivity"
-            android:exported="false" />
+        <activity android:name=".BookingHistoryActivity" android:exported="false" />
+
+        <!-- Payment Result Activity (from devbao branch) -->
         <activity
             android:name=".PaymentResultActivity"
             android:exported="true"
@@ -98,7 +77,6 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                
                 <!-- Deep link scheme for payment callback -->
                 <data
                     android:scheme="evcare"
@@ -106,6 +84,38 @@
                     android:pathPrefix="/result" />
             </intent-filter>
         </activity>
+
+        <!-- Technician Activities (from main branch) -->
+        <activity
+            android:name=".TechnicianDashboardActivity"
+            android:exported="false"
+            android:label="Technician Dashboard"
+            android:theme="@style/Theme.PRM392_EVCare" />
+        <activity
+            android:name=".TechnicianScheduleActivity"
+            android:exported="false"
+            android:label="Schedule"
+            android:theme="@style/Theme.PRM392_EVCare" />
+        <activity
+            android:name=".TechnicianServicesActivity"
+            android:exported="false"
+            android:label="My Services"
+            android:theme="@style/Theme.PRM392_EVCare" />
+        <activity
+            android:name=".TechnicianChatActivity"
+            android:exported="false"
+            android:label="Chat"
+            android:theme="@style/Theme.PRM392_EVCare" />
+        <activity
+            android:name=".TechnicianHistoryActivity"
+            android:exported="false"
+            android:label="Service History"
+            android:theme="@style/Theme.PRM392_EVCare" />
+        <activity
+            android:name=".TechnicianSettingsActivity"
+            android:exported="false"
+            android:label="Settings"
+            android:theme="@style/Theme.PRM392_EVCare" />
     </application>
 
 </manifest>

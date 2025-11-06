@@ -19,6 +19,7 @@ import com.example.prm392_evcare.models.RegisterRequest;
 import com.example.prm392_evcare.models.ServiceCenterDetailResponse;
 import com.example.prm392_evcare.models.ServicePackagesResponse;
 import com.example.prm392_evcare.models.ServiceTypesResponse;
+import com.example.prm392_evcare.models.TechnicianScheduleResponse;
 import com.example.prm392_evcare.models.TimeSlotsResponse;
 import com.example.prm392_evcare.models.UpdateProfileRequest;
 import com.example.prm392_evcare.models.UserProfileResponse;
@@ -206,5 +207,26 @@ public interface ApiService {
     Call<PaymentResponse> cancelPayment(
         @Header("Authorization") String token,
         @Path("paymentId") String paymentId
+    );
+    
+    // ==================== Technician Endpoints ====================
+    @GET("/api/technicians/{technicianId}/schedules")
+    Call<TechnicianScheduleResponse> getTechnicianSchedules(
+        @Header("Authorization") String token,
+        @Path("technicianId") String technicianId,
+        @Query("startDate") String startDate,
+        @Query("endDate") String endDate
+    );
+    
+    @POST("/api/technician-schedules/{scheduleId}/check-in")
+    Call<com.example.prm392_evcare.models.CheckInOutResponse> checkIn(
+        @Header("Authorization") String token,
+        @Path("scheduleId") String scheduleId
+    );
+    
+    @POST("/api/technician-schedules/{scheduleId}/check-out")
+    Call<com.example.prm392_evcare.models.CheckInOutResponse> checkOut(
+        @Header("Authorization") String token,
+        @Path("scheduleId") String scheduleId
     );
 }

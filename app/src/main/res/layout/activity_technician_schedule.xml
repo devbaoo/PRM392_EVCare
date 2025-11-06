@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TechnicianScheduleActivity">
+
+    <!-- Main Content -->
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- AppBar -->
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:title="Lịch làm việc"
+                app:titleTextColor="@android:color/white" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!-- Main Content Area -->
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#F5F5F5"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Filter Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:text="Lịch làm việc"
+                            android:textColor="#212121"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <!-- Status Filter Chips -->
+                        <com.google.android.material.chip.ChipGroup
+                            android:id="@+id/chipGroupStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:selectionRequired="false"
+                            app:singleLine="false"
+                            app:singleSelection="false">
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipWorking"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="true"
+                                android:text="Đang làm"
+                                app:chipBackgroundColor="@color/primary"
+                                app:chipStrokeWidth="0dp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipCompleted"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hoàn tất" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipPending"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Nghỉ phép" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipVacation"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Vắng" />
+
+                            <com.google.android.material.chip.Chip
+                                android:id="@+id/chipSchedule"
+                                style="@style/Widget.Material3.Chip.Filter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Lịch" />
+                        </com.google.android.material.chip.ChipGroup>
+
+                        <!-- Date Selector -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Ngày"
+                                    android:textColor="#757575"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/tvCurrentDate"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="05/11/2025"
+                                    android:textColor="#212121"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Giờ bắt đầu"
+                                    android:textColor="#757575"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/tvStartTime"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="08:00"
+                                    android:textColor="#212121"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Giờ kết thúc"
+                                    android:textColor="#757575"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:id="@+id/tvEndTime"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="17:00"
+                                    android:textColor="#212121"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- Action Buttons -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:gravity="end"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnToday"
+                                style="@style/Widget.Material3.Button.TextButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hôm nay"
+                                android:textAllCaps="false" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnCheckOut"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:backgroundTint="#6366F1"
+                                android:text="Check out"
+                                android:textAllCaps="false"
+                                android:textColor="@android:color/white"
+                                app:cornerRadius="8dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Calendar Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <!-- Calendar Header with Month/Year Selector -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <Spinner
+                                android:id="@+id/spinnerYear"
+                                android:layout_width="100dp"
+                                android:layout_height="40dp"
+                                android:background="@android:drawable/btn_dropdown"
+                                android:paddingStart="12dp"
+                                android:paddingEnd="12dp" />
+
+                            <Spinner
+                                android:id="@+id/spinnerMonth"
+                                android:layout_width="100dp"
+                                android:layout_height="40dp"
+                                android:layout_marginStart="8dp"
+                                android:background="@android:drawable/btn_dropdown"
+                                android:paddingStart="12dp"
+                                android:paddingEnd="12dp" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="1dp"
+                                android:layout_weight="1" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnMonthView"
+                                style="@style/Widget.Material3.Button.TonalButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
+                                android:text="Tháng"
+                                android:textAllCaps="false"
+                                android:textSize="12sp"
+                                app:cornerRadius="4dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnYearView"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
+                                android:layout_marginStart="8dp"
+                                android:text="Năm"
+                                android:textAllCaps="false"
+                                android:textSize="12sp"
+                                app:cornerRadius="4dp" />
+                        </LinearLayout>
+
+                        <!-- Day of Week Headers -->
+                        <GridLayout
+                            android:id="@+id/gridDayHeaders"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:columnCount="7"
+                            android:rowCount="1">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:layout_columnWeight="1"
+                                android:gravity="center"
+                                android:text="T2"
+                                android:textColor="#757575"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:layout_columnWeight="1"
+                                android:gravity="center"
+                                android:text="T3"
+                                android:textColor="#757575"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:layout_columnWeight="1"
+                                android:gravity="center"
+                                android:text="T4"
+                                android:textColor="#757575"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:layout_columnWeight="1"
+                                android:gravity="center"
+                                android:text="T5"
+                                android:textColor="#757575"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:layout_columnWeight="1"
+                                android:gravity="center"
+                                android:text="T6"
+                                android:textColor="#757575"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:layout_columnWeight="1"
+                                android:gravity="center"
+                                android:text="T7"
+                                android:textColor="#757575"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:layout_columnWeight="1"
+                                android:gravity="center"
+                                android:text="CN"
+                                android:textColor="#757575"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </GridLayout>
+
+                        <!-- Calendar Grid -->
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerCalendar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Upcoming Appointments -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:text="Upcoming Appointments"
+                            android:textColor="#212121"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvNoAppointments"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="No upcoming appointments"
+                            android:textColor="#757575"
+                            android:textSize="14sp" />
+
+                        <!-- RecyclerView for appointments will be added here in future -->
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- Loading Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <!-- Navigation Drawer -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/nav_header_technician"
+        app:itemIconTint="#6366F1"
+        app:itemTextColor="#212121"
+        app:menu="@menu/drawer_menu" />
+
+</androidx.drawerlayout.widget.DrawerLayout>
+

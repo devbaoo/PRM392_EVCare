@@ -13,6 +13,7 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,6 +22,9 @@ import com.example.prm392_evcare.api.ApiClient;
 import com.example.prm392_evcare.api.ApiService;
 import com.example.prm392_evcare.models.LoginRequest;
 import com.example.prm392_evcare.models.LoginResponse;
+import com.example.prm392_evcare.models.User;
+import com.example.prm392_evcare.models.UserProfile;
+import com.example.prm392_evcare.models.UserProfileResponse;
 import com.example.prm392_evcare.utils.SessionManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -129,6 +133,78 @@ public class LoginActivity extends AppCompatActivity {
         return email.contains("@") && email.contains(".");
     }
 
+    private void fetchUserProfileAndCompleteLogin(LoginResponse loginResponse) {
+        String token = "Bearer " + sessionManager.getAuthToken();
+        
+        Call<UserProfileResponse> call = apiService.getUserProfile(token);
+        call.enqueue(new Callback<UserProfileResponse>() {
+            @Override
+            public void onResponse(Call<UserProfileResponse> call, Response<UserProfileResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserProfileResponse profileResponse = response.body();
+                    
+                    if (profileResponse.isSuccess() && profileResponse.getUser() != null) {
+                        UserProfile userProfile = profileResponse.getUser();
+                        
+                        // Convert UserProfile to User
+                        User completeUser = new User();
+                        completeUser.setId(userProfile.getId());
+                        completeUser.setUsername(userProfile.getUsername());
+                        completeUser.setEmail(userProfile.getEmail());
+                        completeUser.setFullName(userProfile.getFullName());
+                        completeUser.setPhone(userProfile.getPhone());
+                        completeUser.setAddress(userProfile.getAddress());
+                        completeUser.setRole(userProfile.getRole());
+                        completeUser.setAvatar(userProfile.getAvatar());
+                        completeUser.setVerified(userProfile.isVerified());
+                        
+                        // Debug logs
+                        android.util.Log.d("LoginActivity", "========== PROFILE FETCHED ==========");
+                        android.util.Log.d("LoginActivity", "User ID from profile: " + completeUser.getId());
+                        android.util.Log.d("LoginActivity", "User Role: " + completeUser.getRole());
+                        android.util.Log.d("LoginActivity", "User Email: " + completeUser.getEmail());
+                        android.util.Log.d("LoginActivity", "=====================================");
+                        
+                        // Save complete user with ID
+                        sessionManager.saveUser(completeUser);
+                        sessionManager.setLoggedIn(true);
+                        
+                        // Show success dialog
+                        showStatusDialog(true, "Đăng nhập thành công", 
+                                "Chào mừng " + completeUser.getFullName() + " đã trở lại!");
+                    } else {
+                        // Fallback: save user from login response (without ID)
+                        android.util.Log.w("LoginActivity", "Failed to fetch profile, using login response user");
+                        sessionManager.saveUser(loginResponse.getUser());
+                        sessionManager.setLoggedIn(true);
+                        
+                        showStatusDialog(true, "Đăng nhập thành công", 
+                                "Chào mừng " + loginResponse.getUser().getFullName() + " đã trở lại!");
+                    }
+                } else {
+                    // Fallback: save user from login response
+                    android.util.Log.w("LoginActivity", "Profile API failed, using login response user");
+                    sessionManager.saveUser(loginResponse.getUser());
+                    sessionManager.setLoggedIn(true);
+                    
+                    showStatusDialog(true, "Đăng nhập thành công", 
+                            "Chào mừng " + loginResponse.getUser().getFullName() + " đã trở lại!");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserProfileResponse> call, Throwable t) {
+                // Fallback: save user from login response
+                android.util.Log.e("LoginActivity", "Profile API error: " + t.getMessage());
+                sessionManager.saveUser(loginResponse.getUser());
+                sessionManager.setLoggedIn(true);
+                
+                showStatusDialog(true, "Đăng nhập thành công", 
+                        "Chào mừng " + loginResponse.getUser().getFullName() + " đã trở lại!");
+            }
+        });
+    }
+    
     private void performLogin(String email, String password) {
         LoginRequest loginRequest = new LoginRequest(email, password);
         
@@ -142,15 +218,12 @@ public class LoginActivity extends AppCompatActivity {
                     LoginResponse loginResponse = response.body();
                     
                     if (loginResponse.isSuccess()) {
-                        // Save session data
+                        // Save tokens first
                         sessionManager.saveAuthToken(loginResponse.getAccessToken());
                         sessionManager.saveRefreshToken(loginResponse.getRefreshToken());
-                        sessionManager.saveUser(loginResponse.getUser());
-                        sessionManager.setLoggedIn(true);
                         
-                        // Show success dialog
-                        showStatusDialog(true, "Đăng nhập thành công", 
-                                "Chào mừng " + loginResponse.getUser().getFullName() + " đã trở lại!");
+                        // Fetch complete user profile to get user ID
+                        fetchUserProfileAndCompleteLogin(loginResponse);
                     } else {
                         // Show error dialog
                         showStatusDialog(false, "Đăng nhập thất bại", 
@@ -238,7 +311,39 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void navigateToMain() {
-        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+        // Check user role and navigate to appropriate screen
+        User user = sessionManager.getUser();
+        Intent intent;
+        
+        if (user != null && user.getRole() != null) {
+            String role = user.getRole().toLowerCase();
+            
+            // Navigate based on role
+            switch (role) {
+                case "technician":
+                    intent = new Intent(LoginActivity.this, TechnicianDashboardActivity.class);
+                    break;
+                case "admin":
+                    // TODO: Create AdminDashboardActivity in future
+                    intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    Toast.makeText(this, "Welcome Admin!", Toast.LENGTH_SHORT).show();
+                    break;
+                case "staff":
+                    // TODO: Create StaffDashboardActivity in future
+                    intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    Toast.makeText(this, "Welcome Staff!", Toast.LENGTH_SHORT).show();
+                    break;
+                case "customer":
+                default:
+                    // Customer goes to HomeActivity
+                    intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    break;
+            }
+        } else {
+            // Default to HomeActivity if role is not set
+            intent = new Intent(LoginActivity.this, HomeActivity.class);
+        }
+        
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
