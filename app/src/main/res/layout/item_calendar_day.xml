@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardDay"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:layout_margin="2dp"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="1dp"
+    app:strokeColor="#E0E0E0"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="4dp">
+
+        <TextView
+            android:id="@+id/tvDayNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="01"
+            android:textColor="#212121"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/scheduleIndicatorsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvScheduleTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="2"
+                android:text="08:00 - 17:00"
+                android:textColor="#757575"
+                android:textSize="10sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/statusIndicatorsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/indicatorWorking"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/circle_background"
+                    android:backgroundTint="#2196F3"
+                    android:visibility="gone" />
+
+                <View
+                    android:id="@+id/indicatorCompleted"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/circle_background"
+                    android:backgroundTint="#4CAF50"
+                    android:visibility="gone" />
+
+                <View
+                    android:id="@+id/indicatorLeave"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/circle_background"
+                    android:backgroundTint="#FF9800"
+                    android:visibility="gone" />
+
+                <View
+                    android:id="@+id/indicatorAbsent"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/circle_background"
+                    android:backgroundTint="#F44336"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
+

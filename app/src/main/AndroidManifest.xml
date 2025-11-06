@@ -90,6 +90,38 @@
         <activity
             android:name=".BookingHistoryActivity"
             android:exported="false" />
+        
+        <!-- Technician Activities -->
+        <activity
+            android:name=".TechnicianDashboardActivity"
+            android:exported="false"
+            android:label="Technician Dashboard"
+            android:theme="@style/Theme.PRM392_EVCare" />
+        <activity
+            android:name=".TechnicianScheduleActivity"
+            android:exported="false"
+            android:label="Schedule"
+            android:theme="@style/Theme.PRM392_EVCare" />
+        <activity
+            android:name=".TechnicianServicesActivity"
+            android:exported="false"
+            android:label="My Services"
+            android:theme="@style/Theme.PRM392_EVCare" />
+        <activity
+            android:name=".TechnicianChatActivity"
+            android:exported="false"
+            android:label="Chat"
+            android:theme="@style/Theme.PRM392_EVCare" />
+        <activity
+            android:name=".TechnicianHistoryActivity"
+            android:exported="false"
+            android:label="Service History"
+            android:theme="@style/Theme.PRM392_EVCare" />
+        <activity
+            android:name=".TechnicianSettingsActivity"
+            android:exported="false"
+            android:label="Settings"
+            android:theme="@style/Theme.PRM392_EVCare" />
     </application>
 
 </manifest>

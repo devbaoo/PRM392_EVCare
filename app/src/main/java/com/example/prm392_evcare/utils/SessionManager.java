@@ -44,17 +44,52 @@ public class SessionManager {
     }
     
     public void saveUser(User user) {
+        android.util.Log.d("SessionManager", "========== SAVING USER ==========");
+        android.util.Log.d("SessionManager", "User object: " + (user != null ? "EXISTS" : "NULL"));
+        if (user != null) {
+            android.util.Log.d("SessionManager", "User ID before save: " + user.getId());
+            android.util.Log.d("SessionManager", "User Role: " + user.getRole());
+            android.util.Log.d("SessionManager", "User Email: " + user.getEmail());
+        }
+        
         String userJson = gson.toJson(user);
+        android.util.Log.d("SessionManager", "User JSON: " + userJson);
+        
         editor.putString(KEY_USER, userJson);
         editor.apply();
+        
+        // Verify immediately after save
+        String savedJson = sharedPreferences.getString(KEY_USER, null);
+        android.util.Log.d("SessionManager", "Saved JSON in SharedPrefs: " + savedJson);
+        android.util.Log.d("SessionManager", "===================================");
     }
     
     public User getUser() {
         String userJson = sharedPreferences.getString(KEY_USER, null);
+        android.util.Log.d("SessionManager", "========== GETTING USER ==========");
+        android.util.Log.d("SessionManager", "User JSON from SharedPrefs: " + userJson);
+        
         if (userJson != null) {
-            return gson.fromJson(userJson, User.class);
+            User user = gson.fromJson(userJson, User.class);
+            android.util.Log.d("SessionManager", "Deserialized User: " + (user != null ? "EXISTS" : "NULL"));
+            if (user != null) {
+                android.util.Log.d("SessionManager", "User ID after load: " + user.getId());
+                android.util.Log.d("SessionManager", "User Role: " + user.getRole());
+            }
+            android.util.Log.d("SessionManager", "===================================");
+            return user;
         }
+        
+        android.util.Log.d("SessionManager", "User JSON is NULL");
+        android.util.Log.d("SessionManager", "===================================");
         return null;
+    }
+    
+    public String getUserId() {
+        User user = getUser();
+        String userId = user != null ? user.getId() : null;
+        android.util.Log.d("SessionManager", "getUserId() returning: " + userId);
+        return userId;
     }
     
     public void setLoggedIn(boolean isLoggedIn) {
