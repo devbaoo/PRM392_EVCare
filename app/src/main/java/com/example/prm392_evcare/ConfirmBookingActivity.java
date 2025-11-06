@@ -1,8 +1,13 @@
 package com.example.prm392_evcare;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -11,14 +16,25 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.prm392_evcare.api.ApiClient;
+import com.example.prm392_evcare.api.ApiService;
+import com.example.prm392_evcare.models.BookingResponse;
+import com.example.prm392_evcare.models.CreateBookingRequest;
 import com.example.prm392_evcare.models.ServiceType;
 import com.example.prm392_evcare.models.Vehicle;
+import com.example.prm392_evcare.utils.SessionManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ConfirmBookingActivity extends AppCompatActivity {
 
@@ -42,6 +58,12 @@ public class ConfirmBookingActivity extends AppCompatActivity {
     private String serviceCenterName;
     private ServiceType serviceType;
     private Calendar selectedDate;
+    private boolean isInspectionOnly;
+    
+    private ApiService apiService;
+    private SessionManager sessionManager;
+    private Dialog progressDialog;
+    private Dialog statusDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +75,11 @@ public class ConfirmBookingActivity extends AppCompatActivity {
         serviceCenterId = getIntent().getStringExtra("service_center_id");
         serviceCenterName = getIntent().getStringExtra("service_center_name");
         serviceType = (ServiceType) getIntent().getSerializableExtra("service_type");
-        boolean isInspectionOnly = getIntent().getBooleanExtra("is_inspection_only", false);
+        isInspectionOnly = getIntent().getBooleanExtra("is_inspection_only", false);
+
+        // Initialize API service and session
+        apiService = ApiClient.getClient().create(ApiService.class);
+        sessionManager = new SessionManager(this);
 
         setupToolbar();
         initViews();
@@ -173,11 +199,125 @@ public class ConfirmBookingActivity extends AppCompatActivity {
         String description = etServiceDescription.getText() != null ? 
                             etServiceDescription.getText().toString() : "";
 
-        // TODO: Call API to create booking
-        Toast.makeText(this, "Đang tạo lịch hẹn...", Toast.LENGTH_SHORT).show();
+        // Create booking request
+        showProgressDialog();
         
-        // For now, just show success and go back
-        Toast.makeText(this, "Đặt lịch thành công!", Toast.LENGTH_LONG).show();
-        finish();
+        // Format date to ISO 8601 format (yyyy-MM-dd)
+        SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        String scheduledDate = isoFormat.format(selectedDate.getTime());
+        
+        // Create service type IDs list
+        List<String> serviceTypeIds = new ArrayList<>();
+        if (!isInspectionOnly && serviceType != null) {
+            serviceTypeIds.add(serviceType.getId());
+        }
+        
+        // Default time slot (can be enhanced later to let user choose)
+        String timeSlot = "09:00-10:00";
+        
+        CreateBookingRequest request = new CreateBookingRequest(
+            vehicle.getId(),
+            serviceCenterId,
+            serviceTypeIds,
+            scheduledDate,
+            timeSlot,
+            description
+        );
+        
+        String token = "Bearer " + sessionManager.getAuthToken();
+        Call<BookingResponse> call = apiService.createBooking(token, request);
+        
+        call.enqueue(new Callback<BookingResponse>() {
+            @Override
+            public void onResponse(Call<BookingResponse> call, Response<BookingResponse> response) {
+                hideProgressDialog();
+                
+                if (response.isSuccessful() && response.body() != null) {
+                    BookingResponse bookingResponse = response.body();
+                    
+                    if (bookingResponse.isSuccess()) {
+                        showStatusDialog(true, "Thành công", 
+                            "Đặt lịch bảo dưỡng thành công! Vui lòng kiểm tra lịch sử đặt lịch.");
+                    } else {
+                        showStatusDialog(false, "Thất bại",
+                            bookingResponse.getMessage() != null ? 
+                            bookingResponse.getMessage() : "Không thể đặt lịch");
+                    }
+                } else {
+                    String errorMsg = "Không thể đặt lịch. Vui lòng thử lại.";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMsg = response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    showStatusDialog(false, "Thất bại", errorMsg);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BookingResponse> call, Throwable t) {
+                hideProgressDialog();
+                showStatusDialog(false, "Lỗi kết nối",
+                    "Không thể kết nối đến máy chủ: " + t.getMessage());
+            }
+        });
+    }
+    
+    private void showProgressDialog() {
+        if (progressDialog == null) {
+            progressDialog = new Dialog(this);
+            progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            progressDialog.setContentView(R.layout.dialog_login_progress);
+            progressDialog.setCancelable(false);
+            progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+        progressDialog.show();
+    }
+
+    private void hideProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+    
+    private void showStatusDialog(boolean isSuccess, String status, String message) {
+        if (statusDialog != null && statusDialog.isShowing()) {
+            statusDialog.dismiss();
+        }
+
+        statusDialog = new Dialog(this);
+        statusDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        statusDialog.setContentView(R.layout.dialog_login_status);
+        statusDialog.setCancelable(false);
+        statusDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        ImageView ivStatus = statusDialog.findViewById(R.id.ivStatus);
+        TextView tvStatus = statusDialog.findViewById(R.id.tvStatus);
+        TextView tvMessage = statusDialog.findViewById(R.id.tvMessage);
+        MaterialButton btnOk = statusDialog.findViewById(R.id.btnOk);
+
+        if (isSuccess) {
+            ivStatus.setImageResource(R.drawable.ic_check_circle);
+            ivStatus.setColorFilter(getResources().getColor(R.color.success_color));
+            tvStatus.setTextColor(getResources().getColor(R.color.success_color));
+        } else {
+            ivStatus.setImageResource(R.drawable.ic_error);
+            ivStatus.setColorFilter(getResources().getColor(R.color.error_color));
+            tvStatus.setTextColor(getResources().getColor(R.color.error_color));
+        }
+
+        tvStatus.setText(status);
+        tvMessage.setText(message);
+
+        btnOk.setOnClickListener(v -> {
+            statusDialog.dismiss();
+            if (isSuccess) {
+                finish();
+            }
+        });
+
+        statusDialog.show();
     }
 }
