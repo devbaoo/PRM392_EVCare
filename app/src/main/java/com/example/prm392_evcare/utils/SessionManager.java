@@ -57,6 +57,11 @@ public class SessionManager {
         return null;
     }
     
+    public String getUserId() {
+        User user = getUser();
+        return user != null ? user.getId() : null;
+    }
+    
     public void setLoggedIn(boolean isLoggedIn) {
         editor.putBoolean(KEY_IS_LOGGED_IN, isLoggedIn);
         editor.apply();

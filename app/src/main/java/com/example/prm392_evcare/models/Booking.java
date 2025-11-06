@@ -154,7 +154,7 @@ public class Booking implements Serializable {
 
     public static class VehicleDetails implements Serializable {
         @SerializedName("vehicleModel")
-        private String vehicleModel;
+        private Object vehicleModelRaw;  // Can be String (ID) or Object (full details)
         
         @SerializedName("year")
         private int year;
@@ -165,14 +165,55 @@ public class Booking implements Serializable {
         @SerializedName("licensePlate")
         private String licensePlate;
 
-        public String getVehicleModel() { return vehicleModel; }
+        // Helper method to get vehicle model info
+        public String getVehicleModelName() {
+            if (vehicleModelRaw instanceof String) {
+                // In booking history, it's just an ID
+                return "Model ID: " + vehicleModelRaw;
+            } else if (vehicleModelRaw instanceof java.util.Map) {
+                // In create booking response, it's a full object
+                try {
+                    @SuppressWarnings("unchecked")
+                    java.util.Map<String, Object> model = (java.util.Map<String, Object>) vehicleModelRaw;
+                    String brand = (String) model.get("brand");
+                    String modelName = (String) model.get("modelName");
+                    if (brand != null && modelName != null) {
+                        return brand + " " + modelName;
+                    }
+                } catch (Exception e) {
+                    // Fallback
+                }
+            }
+            return "Unknown Model";
+        }
+        
+        public Object getVehicleModelRaw() { return vehicleModelRaw; }
         public int getYear() { return year; }
         public String getColor() { return color; }
         public String getLicensePlate() { return licensePlate; }
         
         public String getFullName() {
-            return year + " " + vehicleModel + " (" + licensePlate + ")";
+            return year + " " + getVehicleModelName() + " (" + licensePlate + ")";
         }
+    }
+    
+    public static class VehicleModel implements Serializable {
+        @SerializedName("_id")
+        private String id;
+        
+        @SerializedName("brand")
+        private String brand;
+        
+        @SerializedName("modelName")
+        private String modelName;
+        
+        @SerializedName("batteryType")
+        private String batteryType;
+
+        public String getId() { return id; }
+        public String getBrand() { return brand; }
+        public String getModelName() { return modelName; }
+        public String getBatteryType() { return batteryType; }
     }
 
     public static class ServiceDetails implements Serializable {
@@ -236,14 +277,26 @@ public class Booking implements Serializable {
     // Helper methods
     public String getStatusDisplay() {
         if (status == null) return "Unknown";
-        switch (status.toLowerCase()) {
-            case "pending": return "Chờ xác nhận";
-            case "confirmed": return "Đã xác nhận";
-            case "in_progress": return "Đang thực hiện";
-            case "completed": return "Hoàn thành";
-            case "cancelled": return "Đã hủy";
-            default: return status;
-        }
+        
+        String statusLower = status.toLowerCase();
+        
+        // Handle all possible statuses from API
+        if (statusLower.equals("pending_confirmation")) return "Chờ xác nhận";
+        if (statusLower.equals("confirmed")) return "Đã xác nhận";
+        if (statusLower.equals("in_progress")) return "Đang thực hiện";
+        if (statusLower.equals("completed")) return "Hoàn thành";
+        if (statusLower.equals("cancelled")) return "Đã hủy";
+        if (statusLower.equals("quote_provided")) return "Đã báo giá";
+        if (statusLower.equals("quote_approved")) return "Đã duyệt báo giá";
+        if (statusLower.equals("quote_rejected")) return "Từ chối báo giá";
+        
+        // Fallback
+        if (statusLower.contains("pending")) return "Chờ xác nhận";
+        if (statusLower.contains("confirmed")) return "Đã xác nhận";
+        if (statusLower.contains("completed")) return "Hoàn thành";
+        if (statusLower.contains("cancelled")) return "Đã hủy";
+        
+        return status;
     }
 
     public String getFormattedTotalPrice() {

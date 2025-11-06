@@ -163,7 +163,8 @@ public class ProfileActivity extends AppCompatActivity {
                 navigateToHome();
                 return true;
             } else if (itemId == R.id.nav_nearby) {
-                Toast.makeText(this, "Tìm gần tôi (sắp ra mắt)", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ProfileActivity.this, BookingActivity.class);
+                startActivity(intent);
                 return true;
             } else if (itemId == R.id.nav_bookings) {
                 Intent intent = new Intent(ProfileActivity.this, BookingHistoryActivity.class);

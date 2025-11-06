@@ -3,6 +3,7 @@ package com.example.prm392_evcare;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -239,7 +240,7 @@ public class ConfirmBookingActivity extends AppCompatActivity {
             return;
         }
 
-        String paymentMethod = rbAtCenter.isChecked() ? "offline" : "online";
+        String paymentPreference = rbAtCenter.isChecked() ? "offline" : "online";
         String description = etServiceDescription.getText() != null ? 
                             etServiceDescription.getText().toString() : "";
 
@@ -248,7 +249,7 @@ public class ConfirmBookingActivity extends AppCompatActivity {
         
         // Format date to ISO 8601 format (yyyy-MM-dd)
         SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        String scheduledDate = isoFormat.format(selectedDate.getTime());
+        String appointmentDate = isoFormat.format(selectedDate.getTime());
         
         // Validate time selection
         if (selectedHour == null) {
@@ -257,30 +258,25 @@ public class ConfirmBookingActivity extends AppCompatActivity {
             return;
         }
 
-        // Create service type IDs list
-        List<String> serviceTypeIds = new ArrayList<>();
-        if (!isInspectionOnly && serviceType != null) {
-            serviceTypeIds.add(serviceType.getId());
-        }
+        // Format appointment time as HH:mm (e.g., "21:00")
+        String appointmentTime = formatTime(selectedHour, selectedMinute != null ? selectedMinute : 0);
         
-        // Build time slot as 1-hour window based on selected time, e.g., 09:30-10:30
-        Calendar start = (Calendar) selectedDate.clone();
-        start.set(Calendar.HOUR_OF_DAY, selectedHour);
-        start.set(Calendar.MINUTE, selectedMinute != null ? selectedMinute : 0);
-        Calendar end = (Calendar) start.clone();
-        end.add(Calendar.HOUR_OF_DAY, 1);
-
-        String startStr = formatTime(start.get(Calendar.HOUR_OF_DAY), start.get(Calendar.MINUTE));
-        String endStr = formatTime(end.get(Calendar.HOUR_OF_DAY), end.get(Calendar.MINUTE));
-        String timeSlot = startStr + "-" + endStr;
+        // Get customerId from session
+        String customerId = sessionManager.getUserId();
+        
+        // Get serviceTypeId (null if inspection only)
+        String serviceTypeId = (!isInspectionOnly && serviceType != null) ? serviceType.getId() : null;
         
         CreateBookingRequest request = new CreateBookingRequest(
+            customerId,
             vehicle.getId(),
             serviceCenterId,
-            serviceTypeIds,
-            scheduledDate,
-            timeSlot,
-            description
+            serviceTypeId,
+            appointmentDate,
+            appointmentTime,
+            description,
+            paymentPreference,
+            isInspectionOnly
         );
         
         String token = "Bearer " + sessionManager.getAuthToken();
@@ -295,8 +291,18 @@ public class ConfirmBookingActivity extends AppCompatActivity {
                     BookingResponse bookingResponse = response.body();
                     
                     if (bookingResponse.isSuccess()) {
-                        showStatusDialog(true, "Thành công", 
-                            "Đặt lịch bảo dưỡng thành công! Vui lòng kiểm tra lịch sử đặt lịch.");
+                        // Check if payment is required (online payment)
+                        if (Boolean.TRUE.equals(bookingResponse.requiresPayment()) && 
+                            bookingResponse.getPaymentInfo() != null) {
+                            // Has payment link - show payment dialog
+                            showPaymentDialog(bookingResponse.getPaymentInfo());
+                        } else {
+                            // No payment required or offline payment - show success
+                            String successMessage = bookingResponse.getMessage() != null ? 
+                                bookingResponse.getMessage() : 
+                                "Đặt lịch bảo dưỡng thành công! Vui lòng kiểm tra lịch sử đặt lịch.";
+                            showStatusDialog(true, "Thành công", successMessage);
+                        }
                     } else {
                         showStatusDialog(false, "Thất bại",
                             bookingResponse.getMessage() != null ? 
@@ -378,5 +384,56 @@ public class ConfirmBookingActivity extends AppCompatActivity {
         });
 
         statusDialog.show();
+    }
+    
+    private void showPaymentDialog(BookingResponse.PaymentInfo paymentInfo) {
+        Dialog paymentDialog = new Dialog(this);
+        paymentDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        paymentDialog.setContentView(R.layout.dialog_login_status);
+        paymentDialog.setCancelable(false);
+        paymentDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        ImageView ivStatus = paymentDialog.findViewById(R.id.ivStatus);
+        TextView tvStatus = paymentDialog.findViewById(R.id.tvStatus);
+        TextView tvMessage = paymentDialog.findViewById(R.id.tvMessage);
+        MaterialButton btnOk = paymentDialog.findViewById(R.id.btnOk);
+
+        ivStatus.setImageResource(R.drawable.ic_check_circle);
+        ivStatus.setColorFilter(getResources().getColor(R.color.success_color));
+        tvStatus.setTextColor(getResources().getColor(R.color.success_color));
+        tvStatus.setText("Đặt lịch thành công!");
+        
+        String message = "Vui lòng thanh toán đặt cọc " + 
+                        String.format("%,.0f VND", paymentInfo.getAmount()) + 
+                        "\n\nSau khi thanh toán xong, bạn sẽ tự động quay lại ứng dụng.";
+        tvMessage.setText(message);
+        
+        btnOk.setText("Thanh toán ngay");
+        btnOk.setOnClickListener(v -> {
+            paymentDialog.dismiss();
+            // Open payment link in browser
+            openPaymentLink(paymentInfo.getPaymentLink());
+        });
+
+        paymentDialog.show();
+    }
+    
+    private void openPaymentLink(String paymentLink) {
+        try {
+            android.content.Intent browserIntent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW, 
+                android.net.Uri.parse(paymentLink)
+            );
+            startActivity(browserIntent);
+            // Navigate to booking history after opening payment
+            // User will return via deep link after payment
+            Intent intent = new Intent(this, BookingHistoryActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        } catch (Exception e) {
+            Toast.makeText(this, "Không thể mở link thanh toán: " + e.getMessage(), 
+                Toast.LENGTH_LONG).show();
+        }
     }
 }

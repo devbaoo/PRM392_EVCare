@@ -1,6 +1,7 @@
 package com.example.prm392_evcare.api;
 
 import com.example.prm392_evcare.models.BookingResponse;
+import com.example.prm392_evcare.models.BrandResponse;
 import com.example.prm392_evcare.models.ChangePasswordRequest;
 import com.example.prm392_evcare.models.CreateBookingRequest;
 import com.example.prm392_evcare.models.CreateVehicleRequest;
@@ -115,6 +116,9 @@ public interface ApiService {
     
     @GET("/api/vehicle-models")
     Call<VehicleModelsResponse> getVehicleModels();
+    
+    @GET("/api/vehicle-models/brands/list")
+    Call<BrandResponse> getBrands();
     
     // ==================== Booking Endpoints ====================
     @POST("/api/booking")

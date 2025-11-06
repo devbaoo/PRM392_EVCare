@@ -20,6 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.example.prm392_evcare.api.ApiClient;
 import com.example.prm392_evcare.api.ApiService;
+import com.example.prm392_evcare.models.BrandResponse;
 import com.example.prm392_evcare.models.CreateVehicleRequest;
 import com.example.prm392_evcare.models.VehicleModel;
 import com.example.prm392_evcare.models.VehicleModelsResponse;
@@ -38,15 +39,18 @@ import retrofit2.Response;
 
 public class AddVehicleActivity extends AppCompatActivity {
 
+    private Spinner spinnerBrand;
     private Spinner spinnerVehicleModel;
-    private TextInputLayout tilLicensePlate, tilColor, tilYear, tilMileage;
-    private TextInputEditText etLicensePlate, etColor, etYear, etMileage;
+    private TextInputLayout tilLicensePlate, tilColor, tilYear, tilBatteryCapacity;
+    private TextInputEditText etLicensePlate, etColor, etYear, etBatteryCapacity;
     private MaterialButton btnAddVehicle;
     private View loadingView;
 
     private ApiService apiService;
     private SessionManager sessionManager;
-    private List<VehicleModel> vehicleModels;
+    private List<String> brands;
+    private List<VehicleModel> allVehicleModels;
+    private List<VehicleModel> filteredVehicleModels;
     private Dialog progressDialog;
     private Dialog statusDialog;
 
@@ -65,8 +69,8 @@ public class AddVehicleActivity extends AppCompatActivity {
         // Initialize views
         initViews();
 
-        // Load vehicle models
-        loadVehicleModels();
+        // Load brands first, then vehicle models
+        loadBrands();
     }
 
     private void setupToolbar() {
@@ -80,23 +84,113 @@ public class AddVehicleActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        spinnerBrand = findViewById(R.id.spinnerBrand);
         spinnerVehicleModel = findViewById(R.id.spinnerVehicleModel);
         tilLicensePlate = findViewById(R.id.tilLicensePlate);
         tilColor = findViewById(R.id.tilColor);
         tilYear = findViewById(R.id.tilYear);
-        tilMileage = findViewById(R.id.tilMileage);
+        tilBatteryCapacity = findViewById(R.id.tilBatteryCapacity);
 
         etLicensePlate = findViewById(R.id.etLicensePlate);
         etColor = findViewById(R.id.etColor);
         etYear = findViewById(R.id.etYear);
-        etMileage = findViewById(R.id.etMileage);
+        etBatteryCapacity = findViewById(R.id.etBatteryCapacity);
 
         btnAddVehicle = findViewById(R.id.btnAddVehicle);
         loadingView = findViewById(R.id.loadingView);
 
-        vehicleModels = new ArrayList<>();
+        brands = new ArrayList<>();
+        allVehicleModels = new ArrayList<>();
+        filteredVehicleModels = new ArrayList<>();
 
         btnAddVehicle.setOnClickListener(v -> attemptAddVehicle());
+    }
+
+    private void loadBrands() {
+        loadingView.setVisibility(View.VISIBLE);
+
+        Call<BrandResponse> call = apiService.getBrands();
+        call.enqueue(new Callback<BrandResponse>() {
+            @Override
+            public void onResponse(Call<BrandResponse> call, Response<BrandResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    BrandResponse brandResponse = response.body();
+
+                    if (brandResponse.isSuccess() && brandResponse.getData() != null) {
+                        brands = brandResponse.getData();
+                        setupBrandSpinner();
+                        // Load vehicle models after brands are loaded
+                        loadVehicleModels();
+                    } else {
+                        loadingView.setVisibility(View.GONE);
+                        Toast.makeText(AddVehicleActivity.this,
+                                "Không thể tải danh sách hãng xe", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    loadingView.setVisibility(View.GONE);
+                    Toast.makeText(AddVehicleActivity.this,
+                            "Lỗi khi tải danh sách hãng xe", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<BrandResponse> call, Throwable t) {
+                loadingView.setVisibility(View.GONE);
+                Toast.makeText(AddVehicleActivity.this,
+                        "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setupBrandSpinner() {
+        // Add "Tất cả" option at the beginning
+        List<String> brandOptions = new ArrayList<>();
+        brandOptions.add("Tất cả hãng xe");
+        brandOptions.addAll(brands);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                brandOptions
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerBrand.setAdapter(adapter);
+
+        // Set listener to filter vehicle models when brand is selected
+        spinnerBrand.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                filterVehicleModelsByBrand(position);
+            }
+
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+    }
+
+    private void filterVehicleModelsByBrand(int brandPosition) {
+        if (allVehicleModels.isEmpty()) {
+            return;
+        }
+
+        filteredVehicleModels.clear();
+
+        if (brandPosition == 0) {
+            // "Tất cả" selected - show all models
+            filteredVehicleModels.addAll(allVehicleModels);
+        } else {
+            // Filter by selected brand
+            String selectedBrand = brands.get(brandPosition - 1); // -1 because of "Tất cả" at index 0
+            for (VehicleModel model : allVehicleModels) {
+                if (model.getBrand().equals(selectedBrand)) {
+                    filteredVehicleModels.add(model);
+                }
+            }
+        }
+
+        setupVehicleModelSpinner();
     }
 
     private void loadVehicleModels() {
@@ -112,7 +206,8 @@ public class AddVehicleActivity extends AppCompatActivity {
                     VehicleModelsResponse modelsResponse = response.body();
 
                     if (modelsResponse.isSuccess() && modelsResponse.getVehicleModels() != null) {
-                        vehicleModels = modelsResponse.getVehicleModels();
+                        allVehicleModels = modelsResponse.getVehicleModels();
+                        filteredVehicleModels.addAll(allVehicleModels); // Initially show all
                         setupVehicleModelSpinner();
                     } else {
                         Toast.makeText(AddVehicleActivity.this,
@@ -135,7 +230,7 @@ public class AddVehicleActivity extends AppCompatActivity {
 
     private void setupVehicleModelSpinner() {
         List<String> modelNames = new ArrayList<>();
-        for (VehicleModel model : vehicleModels) {
+        for (VehicleModel model : filteredVehicleModels) {
             modelNames.add(model.getFullName());
         }
 
@@ -157,15 +252,15 @@ public class AddVehicleActivity extends AppCompatActivity {
         String licensePlate = etLicensePlate.getText().toString().trim();
         String color = etColor.getText().toString().trim();
         String yearStr = etYear.getText().toString().trim();
-        String mileageStr = etMileage.getText().toString().trim();
+        String batteryCapacityStr = etBatteryCapacity.getText().toString().trim();
 
         // Validate inputs
         boolean cancel = false;
         View focusView = null;
 
-        if (TextUtils.isEmpty(mileageStr)) {
-            tilMileage.setError("Vui lòng nhập số km đã đi");
-            focusView = etMileage;
+        if (TextUtils.isEmpty(batteryCapacityStr)) {
+            tilBatteryCapacity.setError("Vui lòng nhập dung lượng pin");
+            focusView = etBatteryCapacity;
             cancel = true;
         }
 
@@ -176,7 +271,7 @@ public class AddVehicleActivity extends AppCompatActivity {
         } else {
             try {
                 int year = Integer.parseInt(yearStr);
-                if (year < 2000 || year > 2025) {
+                if (year < 2000 || year > 2030) {
                     tilYear.setError("Năm sản xuất không hợp lệ");
                     focusView = etYear;
                     cancel = true;
@@ -210,20 +305,28 @@ public class AddVehicleActivity extends AppCompatActivity {
                 focusView.requestFocus();
             }
         } else {
-            VehicleModel selectedModel = vehicleModels.get(modelPosition);
+            VehicleModel selectedModel = filteredVehicleModels.get(modelPosition);
             int year = Integer.parseInt(yearStr);
-            int mileage = Integer.parseInt(mileageStr);
 
             showProgress(true);
-            performAddVehicle(selectedModel.getId(), licensePlate, color, year, mileage);
+            performAddVehicle(selectedModel, licensePlate, color, year, batteryCapacityStr);
         }
     }
 
-    private void performAddVehicle(String vehicleModelId, String licensePlate, String color,
-                                    int year, int mileage) {
-        CreateVehicleRequest request = new CreateVehicleRequest(
-                vehicleModelId, licensePlate, color, year, mileage
+    private void performAddVehicle(VehicleModel model, String licensePlate, String color,
+                                    int year, String batteryCapacity) {
+        // Create VehicleInfo with all required fields from selected model
+        CreateVehicleRequest.VehicleInfo vehicleInfo = new CreateVehicleRequest.VehicleInfo(
+                model.getBrand(),
+                model.getModelName(),
+                year,
+                model.getBatteryType(),
+                licensePlate,
+                color,
+                batteryCapacity
         );
+
+        CreateVehicleRequest request = new CreateVehicleRequest(vehicleInfo);
 
         String token = "Bearer " + sessionManager.getAuthToken();
 
@@ -263,7 +366,7 @@ public class AddVehicleActivity extends AppCompatActivity {
         tilLicensePlate.setError(null);
         tilColor.setError(null);
         tilYear.setError(null);
-        tilMileage.setError(null);
+        tilBatteryCapacity.setError(null);
     }
 
     private void showStatusDialog(boolean isSuccess, String status, String message) {

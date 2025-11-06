@@ -90,6 +90,22 @@
         <activity
             android:name=".BookingHistoryActivity"
             android:exported="false" />
+        <activity
+            android:name=".PaymentResultActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                
+                <!-- Deep link scheme for payment callback -->
+                <data
+                    android:scheme="evcare"
+                    android:host="payment"
+                    android:pathPrefix="/result" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

@@ -1,39 +1,59 @@
 package com.example.prm392_evcare.models;
 
 import com.google.gson.annotations.SerializedName;
-import java.util.List;
 
 public class CreateBookingRequest {
+    @SerializedName("customerId")
+    private String customerId;
+    
     @SerializedName("vehicleId")
     private String vehicleId;
     
     @SerializedName("serviceCenterId")
     private String serviceCenterId;
     
-    @SerializedName("serviceTypeIds")
-    private List<String> serviceTypeIds;
+    @SerializedName("serviceTypeId")
+    private String serviceTypeId;
     
-    @SerializedName("scheduledDate")
-    private String scheduledDate;
+    @SerializedName("appointmentDate")
+    private String appointmentDate;
     
-    @SerializedName("timeSlot")
-    private String timeSlot;
+    @SerializedName("appointmentTime")
+    private String appointmentTime;
     
-    @SerializedName("notes")
-    private String notes;
+    @SerializedName("serviceDescription")
+    private String serviceDescription;
+    
+    @SerializedName("paymentPreference")
+    private String paymentPreference;
+    
+    @SerializedName("isInspectionOnly")
+    private boolean isInspectionOnly;
 
-    public CreateBookingRequest(String vehicleId, String serviceCenterId, 
-                                List<String> serviceTypeIds, String scheduledDate, 
-                                String timeSlot, String notes) {
+    public CreateBookingRequest(String customerId, String vehicleId, String serviceCenterId,
+                                String serviceTypeId, String appointmentDate, String appointmentTime, 
+                                String serviceDescription, String paymentPreference, 
+                                boolean isInspectionOnly) {
+        this.customerId = customerId;
         this.vehicleId = vehicleId;
         this.serviceCenterId = serviceCenterId;
-        this.serviceTypeIds = serviceTypeIds;
-        this.scheduledDate = scheduledDate;
-        this.timeSlot = timeSlot;
-        this.notes = notes;
+        this.serviceTypeId = serviceTypeId;
+        this.appointmentDate = appointmentDate;
+        this.appointmentTime = appointmentTime;
+        this.serviceDescription = serviceDescription;
+        this.paymentPreference = paymentPreference;
+        this.isInspectionOnly = isInspectionOnly;
     }
 
     // Getters and Setters
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
     public String getVehicleId() {
         return vehicleId;
     }
@@ -50,35 +70,51 @@ public class CreateBookingRequest {
         this.serviceCenterId = serviceCenterId;
     }
 
-    public List<String> getServiceTypeIds() {
-        return serviceTypeIds;
+    public String getServiceTypeId() {
+        return serviceTypeId;
     }
 
-    public void setServiceTypeIds(List<String> serviceTypeIds) {
-        this.serviceTypeIds = serviceTypeIds;
+    public void setServiceTypeId(String serviceTypeId) {
+        this.serviceTypeId = serviceTypeId;
     }
 
-    public String getScheduledDate() {
-        return scheduledDate;
+    public String getAppointmentDate() {
+        return appointmentDate;
     }
 
-    public void setScheduledDate(String scheduledDate) {
-        this.scheduledDate = scheduledDate;
+    public void setAppointmentDate(String appointmentDate) {
+        this.appointmentDate = appointmentDate;
     }
 
-    public String getTimeSlot() {
-        return timeSlot;
+    public String getAppointmentTime() {
+        return appointmentTime;
     }
 
-    public void setTimeSlot(String timeSlot) {
-        this.timeSlot = timeSlot;
+    public void setAppointmentTime(String appointmentTime) {
+        this.appointmentTime = appointmentTime;
     }
 
-    public String getNotes() {
-        return notes;
+    public String getServiceDescription() {
+        return serviceDescription;
     }
 
-    public void setNotes(String notes) {
-        this.notes = notes;
+    public void setServiceDescription(String serviceDescription) {
+        this.serviceDescription = serviceDescription;
+    }
+
+    public String getPaymentPreference() {
+        return paymentPreference;
+    }
+
+    public void setPaymentPreference(String paymentPreference) {
+        this.paymentPreference = paymentPreference;
+    }
+
+    public boolean isInspectionOnly() {
+        return isInspectionOnly;
+    }
+
+    public void setInspectionOnly(boolean inspectionOnly) {
+        isInspectionOnly = inspectionOnly;
     }
 }

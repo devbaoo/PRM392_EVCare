@@ -21,6 +21,12 @@ public class BookingResponse {
         @SerializedName("appointments")
         private List<Booking> bookings;
         
+        @SerializedName("payment")
+        private PaymentInfo payment;
+        
+        @SerializedName("requiresPayment")
+        private Boolean requiresPayment;
+        
         @SerializedName("pagination")
         private Pagination pagination;
 
@@ -31,10 +37,50 @@ public class BookingResponse {
         public List<Booking> getBookings() {
             return bookings;
         }
+        
+        public PaymentInfo getPayment() {
+            return payment;
+        }
+        
+        public Boolean getRequiresPayment() {
+            return requiresPayment;
+        }
 
         public Pagination getPagination() {
             return pagination;
         }
+    }
+    
+    // Payment info when payment is required
+    public static class PaymentInfo {
+        @SerializedName("paymentId")
+        private String paymentId;
+        
+        @SerializedName("orderCode")
+        private long orderCode;
+        
+        @SerializedName("paymentLink")
+        private String paymentLink;
+        
+        @SerializedName("qrCode")
+        private String qrCode;
+        
+        @SerializedName("checkoutUrl")
+        private String checkoutUrl;
+        
+        @SerializedName("amount")
+        private double amount;
+        
+        @SerializedName("expiresAt")
+        private String expiresAt;
+
+        public String getPaymentId() { return paymentId; }
+        public long getOrderCode() { return orderCode; }
+        public String getPaymentLink() { return paymentLink; }
+        public String getQrCode() { return qrCode; }
+        public String getCheckoutUrl() { return checkoutUrl; }
+        public double getAmount() { return amount; }
+        public String getExpiresAt() { return expiresAt; }
     }
 
     // Pagination info
@@ -91,5 +137,13 @@ public class BookingResponse {
 
     public Pagination getPagination() {
         return data != null ? data.getPagination() : null;
+    }
+    
+    public PaymentInfo getPaymentInfo() {
+        return data != null ? data.getPayment() : null;
+    }
+    
+    public Boolean requiresPayment() {
+        return data != null ? data.getRequiresPayment() : false;
     }
 }
