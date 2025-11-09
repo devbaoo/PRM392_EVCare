@@ -83,7 +83,38 @@
                     android:host="payment"
                     android:pathPrefix="/result" />
             </intent-filter>
+            <!-- Optional: Support https deep link so a web returnUrl can open the app -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- TODO: Replace 'yourdomain.com' with your real website domain -->
+                <data
+                    android:scheme="https"
+                    android:host="yourdomain.com"
+                    android:pathPrefix="/payment/result" />
+                <!-- Also handle explicit cancel path if your web uses it -->
+                <data
+                    android:scheme="https"
+                    android:host="yourdomain.com"
+                    android:pathPrefix="/payment/cancel" />
+                <!-- Optional catch-all for other payment paths (ensure it matches your site structure) -->
+                <data
+                    android:scheme="https"
+                    android:host="yourdomain.com"
+                    android:pathPrefix="/payment" />
+            </intent-filter>
         </activity>
+
+        <activity
+            android:name=".PaymentWebViewActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".PaymentOutcomeActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- Technician Activities (from main branch) -->
         <activity

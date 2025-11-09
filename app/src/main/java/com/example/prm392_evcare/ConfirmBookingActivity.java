@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -290,14 +291,26 @@ public class ConfirmBookingActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     BookingResponse bookingResponse = response.body();
                     
+                    Log.d("ConfirmBooking", "Booking success: " + bookingResponse.isSuccess());
+                    Log.d("ConfirmBooking", "Requires payment: " + bookingResponse.requiresPayment());
+                    
                     if (bookingResponse.isSuccess()) {
                         // Check if payment is required (online payment)
-                        if (Boolean.TRUE.equals(bookingResponse.requiresPayment()) && 
-                            bookingResponse.getPaymentInfo() != null) {
+                        BookingResponse.PaymentInfo paymentInfo = bookingResponse.getPaymentInfo();
+                        
+                        Log.d("ConfirmBooking", "Payment info: " + (paymentInfo != null ? "EXISTS" : "NULL"));
+                        if (paymentInfo != null) {
+                            Log.d("ConfirmBooking", "Payment link: " + paymentInfo.getPaymentLink());
+                            Log.d("ConfirmBooking", "Checkout URL: " + paymentInfo.getCheckoutUrl());
+                        }
+                        
+                        if (Boolean.TRUE.equals(bookingResponse.requiresPayment()) && paymentInfo != null) {
                             // Has payment link - show payment dialog
-                            showPaymentDialog(bookingResponse.getPaymentInfo());
+                            Log.d("ConfirmBooking", "Showing payment dialog");
+                            showPaymentDialog(paymentInfo);
                         } else {
                             // No payment required or offline payment - show success
+                            Log.d("ConfirmBooking", "No payment required, showing success");
                             String successMessage = bookingResponse.getMessage() != null ? 
                                 bookingResponse.getMessage() : 
                                 "Đặt lịch bảo dưỡng thành công! Vui lòng kiểm tra lịch sử đặt lịch.";
@@ -405,14 +418,23 @@ public class ConfirmBookingActivity extends AppCompatActivity {
         
         String message = "Vui lòng thanh toán đặt cọc " + 
                         String.format("%,.0f VND", paymentInfo.getAmount()) + 
-                        "\n\nSau khi thanh toán xong, bạn sẽ tự động quay lại ứng dụng.";
+                        "\n\nSau khi thanh toán xong, vui lòng quay lại ứng dụng.";
         tvMessage.setText(message);
         
         btnOk.setText("Thanh toán ngay");
         btnOk.setOnClickListener(v -> {
             paymentDialog.dismiss();
-            // Open payment link in browser
-            openPaymentLink(paymentInfo.getPaymentLink());
+            // Use checkoutUrl if available, otherwise use paymentLink
+            String paymentUrl = paymentInfo.getCheckoutUrl() != null && !paymentInfo.getCheckoutUrl().isEmpty() 
+                ? paymentInfo.getCheckoutUrl() 
+                : paymentInfo.getPaymentLink();
+
+            Log.d("ConfirmBooking", "Opening payment URL (in-app): " + paymentUrl);
+            // Open internal WebView to reliably intercept success/cancel
+            Intent i = new Intent(this, PaymentWebViewActivity.class);
+            i.putExtra(PaymentWebViewActivity.EXTRA_PAYMENT_URL, paymentUrl);
+            // booking id optional; if needed, pass from response earlier by capturing
+            startActivity(i);
         });
 
         paymentDialog.show();
@@ -420,18 +442,22 @@ public class ConfirmBookingActivity extends AppCompatActivity {
     
     private void openPaymentLink(String paymentLink) {
         try {
+            Log.d("ConfirmBooking", "Opening payment link: " + paymentLink);
+            
+            // Open payment link in browser
             android.content.Intent browserIntent = new android.content.Intent(
                 android.content.Intent.ACTION_VIEW, 
                 android.net.Uri.parse(paymentLink)
             );
             startActivity(browserIntent);
-            // Navigate to booking history after opening payment
-            // User will return via deep link after payment
-            Intent intent = new Intent(this, BookingHistoryActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            
+            // Just finish this activity - user will complete payment in browser
+            // and return to app via deep link or manually
+            Toast.makeText(this, "Vui lòng hoàn tất thanh toán trong trình duyệt", 
+                Toast.LENGTH_LONG).show();
             finish();
         } catch (Exception e) {
+            Log.e("ConfirmBooking", "Error opening payment link", e);
             Toast.makeText(this, "Không thể mở link thanh toán: " + e.getMessage(), 
                 Toast.LENGTH_LONG).show();
         }
