@@ -49,39 +49,20 @@ public class PaymentResultActivity extends AppCompatActivity {
             if (paymentStatus != null) {
                 handlePaymentResult(paymentStatus);
             } else {
-                // No status, navigate to booking history
-                navigateToBookingHistory();
+                // No status, fallback to outcome failed
+                handlePaymentResult("failed");
             }
         } else {
-            // No deep link data, navigate to booking history
-            navigateToBookingHistory();
+            // No deep link data, fallback to outcome failed
+            handlePaymentResult("failed");
         }
     }
 
     private void handlePaymentResult(String status) {
-        if ("success".equalsIgnoreCase(status) || "paid".equalsIgnoreCase(status)) {
-            // Payment successful
-            Toast.makeText(this, "Thanh toán thành công!", Toast.LENGTH_LONG).show();
-            navigateToBookingHistory();
-        } else if ("cancel".equalsIgnoreCase(status) || "cancelled".equalsIgnoreCase(status)) {
-            // Payment cancelled
-            Toast.makeText(this, "Bạn đã hủy thanh toán", Toast.LENGTH_LONG).show();
-            navigateToBookingHistory();
-        } else if ("failed".equalsIgnoreCase(status)) {
-            // Payment failed
-            Toast.makeText(this, "Thanh toán thất bại. Vui lòng thử lại", Toast.LENGTH_LONG).show();
-            navigateToBookingHistory();
-        } else {
-            // Unknown status
-            Toast.makeText(this, "Đang xử lý thanh toán...", Toast.LENGTH_SHORT).show();
-            navigateToBookingHistory();
-        }
-    }
-
-    private void navigateToBookingHistory() {
-        Intent intent = new Intent(this, BookingHistoryActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        // Always go straight to booking history regardless of status
+        Intent i = new Intent(this, BookingHistoryActivity.class);
+        i.putExtra("fromPaymentFlow", true);
+        startActivity(i);
         finish();
     }
 }

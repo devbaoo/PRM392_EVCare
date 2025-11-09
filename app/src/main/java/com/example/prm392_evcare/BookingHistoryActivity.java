@@ -74,7 +74,18 @@ public class BookingHistoryActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("Lịch sử đặt lịch");
         }
-        toolbar.setNavigationOnClickListener(v -> finish());
+        // If opened right after payment, pressing back should take user to Home instead of exiting.
+        final boolean fromPaymentFlow = getIntent().getBooleanExtra("fromPaymentFlow", false);
+        toolbar.setNavigationOnClickListener(v -> {
+            if (fromPaymentFlow) {
+                android.content.Intent intent = new android.content.Intent(BookingHistoryActivity.this, HomeActivity.class);
+                // Start Home and finish this screen so we don't go back to payment pages
+                startActivity(intent);
+                finish();
+            } else {
+                finish();
+            }
+        });
     }
 
     private void initViews() {
